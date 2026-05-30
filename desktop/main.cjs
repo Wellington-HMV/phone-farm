@@ -47,6 +47,7 @@ function createWindow() {
     height: 880,
     backgroundColor: "#020617",
     title: "Phone Farm",
+    icon: path.join(__dirname, "build", "icon.ico"), // ícone 🌾 da janela/taskbar
     autoHideMenuBar: true,
     webPreferences: { contextIsolation: true },
   });

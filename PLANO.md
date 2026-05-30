@@ -222,7 +222,11 @@ instala o SDK e aceita os termos do Google (ver `LICENSE`).
       `electron-builder` → NSIS one-click `Phone Farm Setup 0.1.0.exe` (~82MB).
       Validado real: app empacotado sobe server (:4317) + conecta emuladores.
       Gotchas: `win.signAndEditExecutable:false` (winCodeSign.7z falha no 7z por
-      symlinks macOS); sem assinatura (SmartScreen avisa) e sem ícone custom ainda.
+      symlinks macOS); sem assinatura (SmartScreen avisa).
+- [x] **Ícone 🌾:** emoji renderizado no browser → PNG → `icon.ico` (multi-tamanho via
+      sharp + png-to-ico). Aplicado no instalador, atalho e janela/taskbar (runtime via
+      `BrowserWindow.icon`). Ressalva: ícone do .exe do app no Explorer segue o padrão
+      do Electron (embutir exige rcedit→winCodeSign, que falha aqui).
 - [ ] `sharp` é nativo → bundlar o binário certo por plataforma (win/mac/linux)
 - [ ] Detector de pré-requisitos: SDK, platform-tools, system-image, virtualização
       (WHPX/KVM) — com instruções/links se faltar (sem baixar binário do Google)
