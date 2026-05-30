@@ -32,20 +32,28 @@ modo **mock** para desenvolvimento da UI.
 
 ## Rodar
 
-Dois processos — backend e frontend.
+### Produção — 1 processo só (recomendado)
+
+O backend serve o frontend buildado (`dist/`) + API + WebSocket na **mesma porta**.
+
+```bash
+npm install               # deps do front
+cd server && npm install  # deps do back
+cd .. && npm start         # build do front + sobe o backend → http://localhost:4000
+```
+
+Já buildado, é só `npm run serve` (backend serve o `dist/` existente).
+Force a fonte: `FORCE_MOCK=1` (mock) ou `FORCE_ADB=1` (adb) antes do comando.
+
+### Dev — 2 processos (hot reload)
 
 ```bash
 # terminal 1 — backend (porta 4000)
 cd server && npm install && npm run dev
-#   sem device/adb → cai em mock automaticamente
-#   FORCE_MOCK=1 npm run dev   (força mock)
-#   FORCE_ADB=1  npm run dev   (força adb)
 
 # terminal 2 — frontend (porta 5173, proxia /api e /ws p/ o backend)
 npm install && npm run dev
 ```
-
-`npm run build` / `npm run preview` para o frontend de produção.
 
 ## Stack
 

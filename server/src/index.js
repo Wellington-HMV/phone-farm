@@ -9,6 +9,7 @@ import os from "node:os";
 import path from "node:path";
 import fs from "node:fs";
 import crypto from "node:crypto";
+import { fileURLToPath } from "node:url";
 import { chooseSource } from "./devices/index.js";
 import { DeviceManager } from "./manager.js";
 import { createEmulatorManager, sdkAvailable, listImages, DEVICE_PROFILES } from "./emulators.js";
@@ -178,6 +179,18 @@ app.post("/api/emulators", async (req, res) => {
     res.status(400).json({ ok: false, error: e.message });
   }
 });
+
+// --- serve o frontend buildado (dist/) no mesmo processo, se existir ---
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const distDir = path.resolve(__dirname, "../../dist"); // server/src -> raiz/dist
+if (fs.existsSync(path.join(distDir, "index.html"))) {
+  app.use(express.static(distDir));
+  // fallback SPA: tudo que não for /api volta o index.html
+  app.get(/^(?!\/api).*/, (_req, res) => res.sendFile(path.join(distDir, "index.html")));
+  console.log(`[static] servindo frontend de ${distDir}`);
+} else {
+  console.log("[static] dist/ não encontrado — rode 'npm run build' (em dev use o vite :5173)");
+}
 
 // --- HTTP + WS no mesmo servidor ---
 const server = createServer(app);

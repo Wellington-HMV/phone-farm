@@ -214,7 +214,9 @@ instala o SDK e aceita os termos do Google (ver `LICENSE`).
 - [x] **Default AOSP/sem-Play:** criação de AVD prefere imagem `google_apis`/AOSP
       (sem GMS), evitando redistribuição indireta do Play e ToS do Google. Imagens
       marcadas com `play` na API; UI recomenda sem-Play.
-- [ ] Servir o build do front pelo próprio backend (1 processo) em produção
+- [x] **Servir o front pelo backend (1 processo):** `express.static(dist)` + fallback
+      SPA; API/WS/streams na mesma porta (:4000). `npm start` (build+serve) ou
+      `npm run serve`. Validado real (grade espelhando 2 devices em :4000, sem vite).
 - [ ] Empacotar como app instalável (Electron ou serviço Windows + tray) — 1 clique
 - [ ] `sharp` é nativo → bundlar o binário certo por plataforma (win/mac/linux)
 - [ ] Detector de pré-requisitos: SDK, platform-tools, system-image, virtualização
