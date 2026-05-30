@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phone Farm — QA · Protótipo v2</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.4} }
+    @keyframes scan { 0%{transform:translateY(-100%)} 100%{transform:translateY(400%)} }
+    @keyframes drift { 0%{transform:translateY(0)} 100%{transform:translateY(-50%)} }
+    .scanline::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(56,189,248,.08),transparent);height:40%;animation:scan 3.2s linear infinite}
+    ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#334155;border-radius:8px}
+  </style>
+</head>
+<body class="bg-slate-950">
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
+const { useState, useMemo, useEffect, useRef } = React;
+
+const APPS = ["Home","Chat","Browser","Maps","Player","Settings"];
+const MODELS = ["Pixel 8","Galaxy S23","redroid:13","OnePlus 11","Xiaomi 13","redroid:12"];
+const OSES = ["Android 14","Android 13","Android 12"];
+const STATUS = ["online","online","online","booting","offline"];
+const TEST = ["idle","pass","idle","fail","idle"];
+
+function makeDevices(n) {
+  return Array.from({ length: n }, (_, i) => ({
+    id: `dev-${String(i+1).padStart(2,"0")}`,
+    name: `phone-${String(i+1).padStart(2,"0")}`,
+    model: MODELS[i % MODELS.length],
+    os: OSES[i % OSES.length],
+    kind: i % 2 === 0 ? "virtual" : "real",
+    status: STATUS[i % STATUS.length],
+    test: TEST[i % TEST.length],
+    apk: `app v2.${(i%4)+1}.0`,
+    battery: 35 + ((i*13) % 64),
+    ip: `10.0.0.${20+i}`, port: 5555+i,
+    app: APPS[i % APPS.length], fps: 30 + ((i*7) % 30),
+  }));
+}
+
+// --- fake screen ---
+function FakeScreen({ device, small }) {
+  const [clock,setClock]=useState("12:00");
+  useEffect(()=>{const t=setInterval(()=>{const d=new Date();
+    setClock(`${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`)},1000);
+    return ()=>clearInterval(t)},[]);
+  if(device.status==="offline") return <div className="h-full w-full flex flex-col items-center justify-center gap-1 bg-slate-900 text-slate-600"><div className="text-2xl">⏻</div>{!small&&<div className="text-[10px] uppercase tracking-widest">offline</div>}</div>;
+  if(device.status==="booting") return <div className="h-full w-full flex flex-col items-center justify-center gap-2 bg-black text-slate-400"><div className="h-6 w-6 rounded-full border-2 border-slate-700 border-t-sky-400 animate-spin"/>{!small&&<div className="text-[9px] uppercase tracking-widest">booting…</div>}</div>;
+  const hue=(device.id.charCodeAt(4)*47)%360;
+  return (
+    <div className="relative h-full w-full overflow-hidden scanline" style={{background:`linear-gradient(160deg,hsl(${hue} 45% 14%),hsl(${(hue+40)%360} 50% 8%))`}}>
+      <div className="flex items-center justify-between px-2 pt-1 text-[8px] text-white/80"><span>{clock}</span><span>{device.kind==="virtual"?"VIRT":"5G"} {device.battery}%</span></div>
+      {device.test==="running" && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] text-sky-300 bg-black/50 px-2 py-1 rounded z-20">running suite…</div>}
+      <div className="px-2 pt-2 space-y-1">
+        {!small&&<div className="text-white/90 text-[11px] font-semibold">{device.app}</div>}
+        <div className="overflow-hidden" style={{height:small?60:110}}>
+          <div className="animate-[drift_6s_linear_infinite] space-y-1.5">
+            {Array.from({length:8}).map((_,k)=>(
+              <div key={k} className="flex items-center gap-1.5">
+                <div className="h-4 w-4 rounded-full" style={{background:`hsl(${(hue+k*30)%360} 60% 55%)`}}/>
+                <div className="flex-1 space-y-1"><div className="h-1 rounded bg-white/25" style={{width:`${50+((k*17)%45)}%`}}/><div className="h-1 rounded bg-white/10" style={{width:`${30+((k*11)%40)}%`}}/></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      {!small&&<div className="absolute bottom-1 inset-x-0 flex justify-center gap-5 text-white/40 text-[10px]">◁ ○ ▢</div>}
+    </div>
+  );
+}
+
+const dot={online:"bg-emerald-400",booting:"bg-amber-400",offline:"bg-slate-600"};
+const testBadge={
+  idle:{t:"—",c:"text-slate-500 bg-slate-800"},
+  running:{t:"● run",c:"text-sky-300 bg-sky-500/20"},
+  pass:{t:"✓ pass",c:"text-emerald-300 bg-emerald-500/20"},
+  fail:{t:"✕ fail",c:"text-rose-300 bg-rose-500/20"},
+};
+
+// --- card (grid) ---
+function PhoneCard({device,selected,onSelect,onFocus}) {
+  const tb=testBadge[device.test];
+  return (
+    <div onClick={()=>onSelect(device.id)}
+      className={`group relative rounded-2xl p-2 cursor-pointer transition ${selected?"ring-2 ring-sky-400 bg-slate-800/80":"ring-1 ring-slate-800 bg-slate-900/60 hover:ring-slate-600"}`}>
+      <div className="flex items-center justify-between px-1 pb-1.5">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className={`h-2 w-2 rounded-full ${dot[device.status]}`} style={device.status==="online"?{animation:"pulse-dot 2s infinite"}:{}}/>
+          <span className="text-xs text-slate-200 font-medium truncate">{device.name}</span>
+        </div>
+        <span className={`text-[9px] px-1.5 py-0.5 rounded ${tb.c}`}>{tb.t}</span>
+      </div>
+      <div className="relative mx-auto w-full max-w-[140px] aspect-[9/19] rounded-[1.3rem] bg-black p-1.5 shadow-xl ring-1 ring-slate-700">
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 h-1.5 w-9 rounded-full bg-slate-800 z-10"/>
+        <div className="h-full w-full overflow-hidden rounded-[1rem]"><FakeScreen device={device}/></div>
+      </div>
+      <div className="mt-1.5 px-1 flex items-center justify-between text-[10px] text-slate-500">
+        <span className="truncate">{device.os}</span><span>{device.apk}</span>
+      </div>
+      <div className="absolute inset-x-2 bottom-9 flex justify-center gap-1 opacity-0 group-hover:opacity-100 transition">
+        {["◁","○","▢","⤢"].map((c,i)=>(<button key={i} onClick={(e)=>{e.stopPropagation();if(c==="⤢")onFocus(device)}} className="h-6 w-6 rounded-md bg-slate-950/80 text-slate-300 text-xs hover:bg-sky-600 hover:text-white">{c}</button>))}
+      </div>
+    </div>
+  );
+}
+
+// --- row (list, denso p/ muitas telas) ---
+function PhoneRow({device,selected,onSelect,onFocus}) {
+  const tb=testBadge[device.test];
+  return (
+    <div onClick={()=>onSelect(device.id)}
+      className={`flex items-center gap-3 rounded-lg px-3 py-1.5 cursor-pointer text-sm ${selected?"ring-1 ring-sky-400 bg-slate-800/80":"bg-slate-900/50 hover:bg-slate-800/50"}`}>
+      <input type="checkbox" readOnly checked={selected} className="accent-sky-500"/>
+      <div className="w-9 h-14 rounded-md bg-black overflow-hidden ring-1 ring-slate-700 shrink-0"><FakeScreen device={device} small/></div>
+      <span className={`h-2 w-2 rounded-full ${dot[device.status]} shrink-0`}/>
+      <span className="text-slate-200 font-medium w-24 truncate">{device.name}</span>
+      <span className="text-slate-400 w-24 truncate">{device.os}</span>
+      <span className="text-slate-500 w-28 truncate hidden md:block">{device.model}</span>
+      <span className="text-slate-500 w-24 truncate hidden lg:block">{device.apk}</span>
+      <span className="text-slate-600 w-28 truncate hidden lg:block">{device.ip}:{device.port}</span>
+      <div className="flex-1"/>
+      <span className={`text-[10px] px-2 py-0.5 rounded ${tb.c}`}>{tb.t}</span>
+      <span className={`text-[9px] px-1.5 py-0.5 rounded ${device.kind==="virtual"?"bg-violet-500/20 text-violet-300":"bg-cyan-500/20 text-cyan-300"}`}>{device.kind}</span>
+      <button onClick={(e)=>{e.stopPropagation();onFocus(device)}} className="text-slate-400 hover:text-sky-400 px-1">⤢</button>
+    </div>
+  );
+}
+
+function FocusModal({device,onClose}) {
+  if(!device) return null;
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6" onClick={onClose}>
+      <div className="flex gap-6 items-stretch" onClick={(e)=>e.stopPropagation()}>
+        <div className="w-[250px] aspect-[9/19] rounded-[2rem] bg-black p-2 ring-2 ring-slate-700 shadow-2xl"><div className="h-full w-full overflow-hidden rounded-[1.6rem]"><FakeScreen device={device}/></div></div>
+        <div className="w-64 text-slate-300 self-center space-y-3">
+          <h2 className="text-lg font-semibold text-white">{device.name}</h2>
+          {[["Modelo",device.model],["OS",device.os],["Tipo",device.kind],["Status",device.status],["Teste",device.test],["APK",device.apk],["adb",`${device.ip}:${device.port}`]].map(([k,v])=>(
+            <div key={k} className="flex justify-between text-sm border-b border-slate-800 pb-1"><span className="text-slate-500">{k}</span><span>{v}</span></div>
+          ))}
+          <div className="grid grid-cols-3 gap-2 pt-2">{["Back","Home","Recents","Shot","Logcat","Reboot"].map(a=>(<button key={a} className="text-xs py-2 rounded-lg bg-slate-800 hover:bg-sky-600 hover:text-white">{a}</button>))}</div>
+          <button onClick={onClose} className="w-full mt-2 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm">Fechar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [devices,setDevices]=useState(()=>makeDevices(12));
+  const [selected,setSelected]=useState(new Set());
+  const [filter,setFilter]=useState("all");
+  const [query,setQuery]=useState("");
+  const [focus,setFocus]=useState(null);
+  const [view,setView]=useState("grid");      // grid | list
+  const [cols,setCols]=useState(5);
+  const [groupOS,setGroupOS]=useState(false);
+  const timers=useRef([]);
+
+  const toggle=(id)=>setSelected(s=>{const n=new Set(s);n.has(id)?n.delete(id):n.add(id);return n});
+
+  const shown=useMemo(()=>devices.filter(d=>
+    (filter==="all"||d.status===filter||d.kind===filter||d.test===filter||d.os===filter)&&d.name.includes(query)
+  ),[devices,filter,query]);
+
+  const counts=useMemo(()=>({
+    total:devices.length,
+    online:devices.filter(d=>d.status==="online").length,
+    pass:devices.filter(d=>d.test==="pass").length,
+    fail:devices.filter(d=>d.test==="fail").length,
+  }),[devices]);
+
+  // simula rodar suite nos selecionados: idle/pass/fail -> running -> pass|fail
+  const runSuite=()=>{
+    const ids=selected.size?selected:new Set(shown.filter(d=>d.status==="online").map(d=>d.id));
+    setDevices(ds=>ds.map(d=>ids.has(d.id)&&d.status==="online"?{...d,test:"running"}:d));
+    [...ids].forEach((id,i)=>{
+      const t=setTimeout(()=>setDevices(ds=>ds.map(d=>d.id===id?{...d,test:(id.charCodeAt(5)+i)%4===0?"fail":"pass"}:d)),900+(i%6)*450);
+      timers.current.push(t);
+    });
+  };
+  useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);
+
+  const addDevice=()=>setDevices(d=>[...d,makeDevices(d.length+1).slice(-1)[0]]);
+  const selectAll=()=>setSelected(new Set(shown.map(d=>d.id)));
+
+  const Chip=({v,label})=>(<button onClick={()=>setFilter(v)} className={`px-3 py-1 rounded-full text-xs whitespace-nowrap ${filter===v?"bg-sky-600 text-white":"bg-slate-800 text-slate-400 hover:text-slate-200"}`}>{label}</button>);
+
+  const groups=groupOS
+    ? OSES.map(os=>({os,items:shown.filter(d=>d.os===os)})).filter(g=>g.items.length)
+    : [{os:null,items:shown}];
+
+  const renderItems=(items)=> view==="grid"
+    ? <div className="grid gap-3" style={{gridTemplateColumns:`repeat(${cols},minmax(0,1fr))`}}>{items.map(d=><PhoneCard key={d.id} device={d} selected={selected.has(d.id)} onSelect={toggle} onFocus={setFocus}/>)}</div>
+    : <div className="space-y-1">{items.map(d=><PhoneRow key={d.id} device={d} selected={selected.has(d.id)} onSelect={toggle} onFocus={setFocus}/>)}</div>;
+
+  return (
+    <div className="min-h-screen text-slate-200">
+      <header className="sticky top-0 z-40 backdrop-blur bg-slate-950/80 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-5 py-3 flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2"><span className="text-2xl">🌾</span><h1 className="text-lg font-bold tracking-tight">Phone<span className="text-sky-400">Farm</span><span className="text-slate-600 text-xs font-normal ml-2">QA</span></h1></div>
+          <div className="flex gap-4 text-xs text-slate-400">
+            <span><b className="text-slate-100">{counts.total}</b> devices</span>
+            <span><b className="text-emerald-400">{counts.online}</b> online</span>
+            <span><b className="text-emerald-300">{counts.pass}</b> pass</span>
+            <span><b className="text-rose-300">{counts.fail}</b> fail</span>
+          </div>
+          <div className="flex-1"/>
+          <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="buscar phone-…" className="bg-slate-900 ring-1 ring-slate-800 rounded-lg px-3 py-1.5 text-sm w-40 focus:outline-none focus:ring-sky-500"/>
+          <button onClick={addDevice} className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">+ Provisionar</button>
+          <button onClick={runSuite} className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-sm font-medium">▶ Rodar suite</button>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-5 py-3 flex items-center gap-2 flex-wrap">
+        <div className="flex gap-2 overflow-x-auto">
+          <Chip v="all" label="Todos"/><Chip v="online" label="Online"/><Chip v="pass" label="✓ Pass"/><Chip v="fail" label="✕ Fail"/>
+          <Chip v="virtual" label="Virtual"/><Chip v="real" label="Real"/>
+          <span className="w-px bg-slate-700 mx-1"/>
+          {OSES.map(os=><Chip key={os} v={os} label={os.replace("Android ","A")}/>)}
+        </div>
+        <div className="flex-1"/>
+        <button onClick={()=>setGroupOS(g=>!g)} className={`text-xs px-2 py-1 rounded ${groupOS?"bg-sky-600 text-white":"bg-slate-800 text-slate-400"}`}>Agrupar OS</button>
+        <div className="flex rounded-lg overflow-hidden ring-1 ring-slate-700">
+          <button onClick={()=>setView("grid")} className={`px-2 py-1 text-xs ${view==="grid"?"bg-sky-600 text-white":"bg-slate-800 text-slate-400"}`}>▦ Grade</button>
+          <button onClick={()=>setView("list")} className={`px-2 py-1 text-xs ${view==="list"?"bg-sky-600 text-white":"bg-slate-800 text-slate-400"}`}>☰ Lista</button>
+        </div>
+        {view==="grid"&&<div className="flex items-center gap-1">{[4,5,6,7].map(c=>(<button key={c} onClick={()=>setCols(c)} className={`h-7 w-7 rounded text-xs ${cols===c?"bg-sky-600 text-white":"bg-slate-800 text-slate-400"}`}>{c}</button>))}</div>}
+      </div>
+
+      {selected.size>0 &&
+        <div className="max-w-7xl mx-auto px-5 pb-2 flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 bg-slate-800/80 rounded-lg px-2 py-1">
+            <span className="text-xs text-sky-300">{selected.size} selec.</span>
+            {["📦 Instalar APK","🧹 Limpar dados","📸 Screenshot","↻ Reiniciar"].map(a=>(<button key={a} className="text-xs px-2 py-1 rounded bg-slate-700 hover:bg-sky-600">{a}</button>))}
+            <button onClick={()=>setSelected(new Set())} className="text-xs text-slate-400 px-1">✕</button>
+          </div>
+        </div>}
+      {selected.size===0 && <div className="max-w-7xl mx-auto px-5 pb-1"><button onClick={selectAll} className="text-xs text-slate-500 hover:text-slate-300">Selecionar todos ({shown.length})</button></div>}
+
+      <main className="max-w-7xl mx-auto px-5 pb-16 space-y-6">
+        {groups.map(g=>(
+          <section key={g.os||"all"}>
+            {g.os&&<h3 className="text-xs uppercase tracking-widest text-slate-500 mb-2">{g.os} <span className="text-slate-600">· {g.items.length}</span></h3>}
+            {renderItems(g.items)}
+          </section>
+        ))}
+        {shown.length===0&&<p className="text-center text-slate-600 py-20">Nenhum device.</p>}
+      </main>
+
+      <FocusModal device={focus} onClose={()=>setFocus(null)}/>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>

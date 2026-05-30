@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scanline::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    height: 40%;
+    background: linear-gradient(180deg, transparent, rgba(56, 189, 248, 0.08), transparent);
+    animation: scan 3.2s linear infinite;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 8px;
+}
