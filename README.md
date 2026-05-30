@@ -1,8 +1,19 @@
-# Phone Farm — QA
+# Phone Farm
 
-Painel web de farm de celulares **Android** para QA: grade/lista de devices com
-tela ao vivo, status de teste (pass/fail) e controle remoto. Veja arquitetura e
-decisões em [`PLANO.md`](./PLANO.md).
+**Phone Farm** transforma sua máquina numa **fazenda de celulares Android** para QA e
+automação. Cada "celular" é um **emulador Android (AVD)** rodando localmente — criado,
+iniciado e parado direto pela interface — ou um device físico via **USB** (mesmo
+pipeline `adb`). A **grade espelha a tela real** de cada device ao vivo; ao **expandir**,
+você controla por **toque, arraste e long-press**, além de teclas (Home/Back/Power/
+Volume), rotação, digitação, abertura de URL, **instalação de APK** (em lote) e
+**gravação de tela**.
+
+Stack: **React + Vite + Tailwind** no front; **Node + Express + WebSocket** no back, com
+streaming **MJPEG** leve (downscale via `sharp`). Sem o SDK Android instalado, roda em
+modo **mock** para desenvolvimento da UI.
+
+> Painel de QA/testes/automação **próprios** — não destinado a fraude, multi-conta ou
+> burla de Termos de Serviço de apps. Arquitetura e decisões em [`PLANO.md`](./PLANO.md).
 
 > 🏁 **v0.1 — primeira versão funcional.** Cada "celular" é um **emulador Android (AVD)**
 > rodando na mesma máquina (device USB também funciona). Sobe/derruba pela UI, a grade

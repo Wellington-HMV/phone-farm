@@ -1,0 +1,33 @@
+Phone Farm — Licença Proprietária
+Copyright (c) 2026 Wellington (Wellington-HMV). Todos os direitos reservados.
+
+Este software e o código-fonte associado ("Software") são propriedade do detentor
+dos direitos autorais acima. O código pode estar visível publicamente, mas isso NÃO
+concede nenhuma licença ou direito de uso.
+
+É PROIBIDO, sem permissão prévia, expressa e por escrito do detentor dos direitos:
+  - usar o Software para qualquer finalidade (comercial ou não);
+  - copiar, modificar, mesclar, publicar ou criar trabalhos derivados;
+  - distribuir, sublicenciar, vender, alugar ou hospedar o Software ou parte dele.
+
+Todos os direitos não concedidos expressamente são reservados ao detentor.
+
+Para licenciar o uso (incluindo uso comercial), contate o detentor dos direitos.
+
+ISENÇÃO: O SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIAS DE QUALQUER TIPO. EM
+NENHUMA HIPÓTESE O DETENTOR SERÁ RESPONSÁVEL POR QUAISQUER DANOS DECORRENTES DO USO.
+
+----------------------------------------------------------------------------------
+Componentes de terceiros
+----------------------------------------------------------------------------------
+Este projeto depende de bibliotecas de código aberto (React, Vite, Tailwind CSS,
+Express, ws, multer, sharp, entre outras), cada uma sob sua própria licença
+(MIT/Apache-2.0). Tais licenças aplicam-se apenas aos respectivos componentes.
+
+O Software NÃO inclui nem redistribui o Android SDK, o Android Emulator, imagens de
+sistema ou serviços do Google (Google Play / GMS). Esses componentes pertencem ao
+Google e estão sujeitos aos termos do Google; o usuário deve instalá-los e aceitar
+seus termos por conta própria. O Software apenas os orquestra via `adb`/`emulator`.
+
+"Android" é marca do Google LLC. O uso aqui é meramente descritivo; este projeto não
+é afiliado, patrocinado ou endossado pelo Google.

@@ -59,6 +59,9 @@ export default function ProvisionModal({ open, onClose }) {
               <option key={im.pkg} value={im.pkg}>{im.label}</option>
             ))}
           </select>
+          <span className="text-[10px] text-slate-500">
+            Sem Play Store (AOSP/google_apis) é o recomendado p/ uso comercial.
+          </span>
         </label>
 
         <label className="block space-y-1">

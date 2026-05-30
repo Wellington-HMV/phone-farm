@@ -207,13 +207,20 @@ Adiados ao optar por destravar com o downscale (3.1). Puxar conforme necessidade
 - [ ] **#3 redroid (escala 10–50):** Android em container, mais leve que AVD.
       **Requer Linux** (kernel binder/ashmem; WSL2 padrão não tem) → servidor dedicado.
 
-### Fase 5 — Empacotamento / distribuição ⏳ (meta do usuário)
-Rodar local agora; **depois ser instalável em outras máquinas**.
-- [ ] Bundle backend+frontend (Electron, ou serviço + UI servida pelo backend)
-- [ ] Instalador que detecta/instala Android SDK + platform-tools + system-image
-- [ ] `sharp` é nativo (binário por SO) → bundlar o certo por plataforma
-- [ ] Config externável (porta, caminho do SDK, conjunto de AVDs)
-- [ ] Checar virtualização (WHPX/KVM) e orientar o setup
+### Fase 5 — Empacotamento / distribuição ⏳ (meta do usuário) — INICIADA
+Rodar local agora; **depois ser instalável em outras máquinas**. Premissa legal:
+**não redistribuir** nada do Google (SDK/emulador/Play) — o app orquestra, o cliente
+instala o SDK e aceita os termos do Google (ver `LICENSE`).
+- [x] **Default AOSP/sem-Play:** criação de AVD prefere imagem `google_apis`/AOSP
+      (sem GMS), evitando redistribuição indireta do Play e ToS do Google. Imagens
+      marcadas com `play` na API; UI recomenda sem-Play.
+- [ ] Servir o build do front pelo próprio backend (1 processo) em produção
+- [ ] Empacotar como app instalável (Electron ou serviço Windows + tray) — 1 clique
+- [ ] `sharp` é nativo → bundlar o binário certo por plataforma (win/mac/linux)
+- [ ] Detector de pré-requisitos: SDK, platform-tools, system-image, virtualização
+      (WHPX/KVM) — com instruções/links se faltar (sem baixar binário do Google)
+- [ ] Config externável (porta, caminho do SDK, pool de AVDs a auto-subir)
+- [ ] Licenciamento/ativação do produto (se comercial)
 
 ---
 

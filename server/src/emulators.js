@@ -45,17 +45,26 @@ export function listImages() {
     const api = Number((plat.match(/android-(\d+)/) || [])[1]) || 0;
     for (const tag of safeDirs(join(root, plat))) {
       for (const abi of safeDirs(join(root, plat, tag))) {
+        const play = /playstore/i.test(tag); // imagem com Google Play / GMS
         out.push({
           pkg: `system-images;${plat};${tag};${abi}`,
           api,
           tag,
           abi,
-          label: `Android ${API_TO_VER[api] || "?"} · ${tag} · ${abi}`,
+          play,
+          label: `Android ${API_TO_VER[api] || "?"} · ${tag} · ${abi}${play ? " (Play)" : ""}`,
         });
       }
     }
   }
-  return out.sort((a, b) => b.api - a.api);
+  // sem-Play (AOSP/google_apis) primeiro → default comercial limpo; depois por API desc
+  return out.sort((a, b) => Number(a.play) - Number(b.play) || b.api - a.api);
+}
+
+/** Pacote default p/ criar AVD: prefere imagem SEM Play Store (uso comercial limpo). */
+function defaultPkg() {
+  const imgs = listImages();
+  return (imgs.find((i) => !i.play) || imgs[0])?.pkg || DEFAULT_PKG;
 }
 
 function safeDirs(p) {
@@ -140,7 +149,7 @@ export function createEmulatorManager() {
     // sanitiza nome (sem injeção no shell)
     const name = String(rawName).replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 40);
     if (!name) return Promise.reject(new Error("nome inválido"));
-    const k = pkg || DEFAULT_PKG;
+    const k = pkg || defaultPkg(); // sem pkg → prefere imagem sem Play (AOSP)
     const d = device || DEFAULT_DEVICE;
 
     // avdmanager.bat no Windows precisa de shell; comando em string com pacote entre
