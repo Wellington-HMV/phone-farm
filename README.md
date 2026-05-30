@@ -162,6 +162,25 @@ npm run dist                  # gera o instalador Windows em desktop/release/
 O instalador **não** inclui o Android SDK/emulador — o usuário instala o SDK e aceita
 os termos do Google (ver `LICENSE`). O app apenas orquestra via `adb`/`emulator`.
 
+## Licença / trial (7 dias)
+
+O app desktop tem avaliação de **7 dias**. Depois, abre a tela de ativação pedindo uma
+**chave de licença** (e o **ID da instalação** p/ o cliente enviar ao contato).
+
+- Estado em `userData/pf-state.json` (`installId`, `firstRun`, `key`).
+- Chave = `HMAC(SECRET, installId)` — offline, determinística por instalação.
+- **Vendedor** gera a chave com o ID que o cliente mandar:
+  ```bash
+  node desktop/keygen.cjs <installId>
+  ```
+
+**Configure antes de distribuir:**
+- `desktop/trial.cjs` → troque `SECRET` (default é `…CHANGE-ME`) por um segredo **seu e privado**.
+- `desktop/gate.html` → troque `CONTACT` pelo seu e-mail/contato.
+
+> ⚠️ Trial client-side **segura usuário honesto**, mas é burlável (apagar o
+> `pf-state.json` reseta). Trava real precisa de **validação no servidor** (débito).
+
 ## Marca
 
 A identidade é o 🌾 + **PhoneFarm** (azul `#38bdf8` sobre fundo escuro `#020617`).
