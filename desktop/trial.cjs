@@ -1,5 +1,17 @@
 // Trial de 7 dias + ativação por chave (offline, HMAC por ID de instalação).
 // Client-side: segura usuário honesto. Trava real exige servidor (ver PLANO).
+//
+// ┌───────────────────────────────────────────────────────────────────────────┐
+// │ DÉBITO: TRAVA REAL (servidor de licença)                                    │
+// │ Este trial é CLIENT-SIDE e BURLÁVEL: apagar `pf-state.json` reseta os 7     │
+// │ dias, e o SECRET vive no app (alguém com o binário pode gerar chaves).      │
+// │ Para trava de verdade, validar no SERVIDOR:                                 │
+// │  - app envia installId → backend responde {licenciado, expira_em, assinado} │
+// │  - resposta ASSINADA (chave privada no servidor; app só tem a pública)      │
+// │  - trial/licença e revogação ficam no servidor (cliente não reseta)         │
+// │  - cache com expiração curta p/ uso offline temporário                      │
+// │ Enquanto não houver servidor, manter SECRET privado e repo fechado.         │
+// └───────────────────────────────────────────────────────────────────────────┘
 
 const crypto = require("node:crypto");
 const fs = require("node:fs");

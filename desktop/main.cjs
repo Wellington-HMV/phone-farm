@@ -44,6 +44,7 @@ function loadApp() {
 }
 
 function route() {
+  // DÉBITO: trava real = validar no servidor (ver bloco em trial.cjs). Hoje é client-side/burlável.
   const st = trial.status(dataDir());
   if (st.state === "expired") win.loadFile(path.join(__dirname, "gate.html"));
   else loadApp();
