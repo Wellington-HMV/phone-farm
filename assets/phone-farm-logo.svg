@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="200" viewBox="0 0 760 200" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b3b2e"/>
+      <stop offset="1" stop-color="#06231a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- fundo -->
+  <rect width="760" height="200" rx="24" fill="#020617"/>
+  <rect x="1" y="1" width="758" height="198" rx="23" fill="none" stroke="#1e293b"/>
+
+  <!-- celular -->
+  <g transform="translate(56,40)">
+    <rect x="0" y="0" width="80" height="120" rx="18" fill="#000" stroke="#334155" stroke-width="2"/>
+    <rect x="6" y="6" width="68" height="108" rx="12" fill="url(#screen)"/>
+    <rect x="28" y="11" width="24" height="4" rx="2" fill="#1e293b"/>
+    <!-- broto / planta (a "fazenda") -->
+    <g transform="translate(40,96)" stroke="#34d399" stroke-width="3" stroke-linecap="round" fill="none">
+      <path d="M0 0 V-34"/>
+      <path d="M0 -22 q -16 -4 -20 -20 q 16 2 20 20"/>
+      <path d="M0 -28 q 16 -4 20 -20 q -16 2 -20 20"/>
+    </g>
+    <circle cx="40" cy="62" r="3" fill="#38bdf8"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="170" y="108" font-size="60" font-weight="800" letter-spacing="-1">
+    <tspan fill="#f1f5f9">Phone</tspan><tspan fill="#38bdf8">Farm</tspan>
+  </text>
+  <text x="172" y="146" font-size="20" fill="#64748b" letter-spacing="2">FAZENDA DE CELULARES ANDROID</text>
+</svg>

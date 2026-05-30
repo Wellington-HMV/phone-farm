@@ -1,4 +1,12 @@
-# Phone Farm
+<p align="center">
+  <img src="assets/phone-farm-logo.svg" alt="Phone Farm" width="520" />
+</p>
+
+<p align="center">
+  Fazenda de celulares Android local — emuladores via UI, espelho ao vivo e controle total.
+</p>
+
+---
 
 **Phone Farm** transforma sua máquina numa **fazenda de celulares Android** para QA e
 automação. Cada "celular" é um **emulador Android (AVD)** rodando localmente — criado,

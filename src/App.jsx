@@ -111,7 +111,6 @@ export default function App() {
             <span className="text-2xl">🌾</span>
             <h1 className="text-lg font-bold tracking-tight">
               Phone<span className="text-sky-400">Farm</span>
-              <span className="text-slate-600 text-xs font-normal ml-2">QA</span>
             </h1>
           </div>
           <div className="flex gap-4 text-xs text-slate-400">
