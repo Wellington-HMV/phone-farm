@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="assets/phone-farm-logo.svg" alt="Phone Farm" width="520" />
-</p>
+<h1 align="center">🌾 Phone Farm</h1>
 
 <p align="center">
   Fazenda de celulares Android local — emuladores via UI, espelho ao vivo e controle total.
@@ -148,20 +146,10 @@ Ver fases em `PLANO.md`. Imediato:
 2. Fase 1: integrar `ws-scrcpy` p/ tela real de 1 Android no `FakeScreen`.
 3. Fase 2: subir `redroid` em Docker e conectar N telas.
 
-## Marca / assets
+## Marca
 
-Em [`assets/`](./assets):
-
-| Arquivo | Uso |
-|---|---|
-| `phone-farm-logo.svg` / `.png` | logo completo (fundo escuro) — README, header |
-| `phone-farm-logo-light.svg` / `.png` | logo completo p/ fundos claros |
-| `phone-farm-icon.svg` | ícone quadrado (app icon) |
-| `phone-farm-icon-512.png` / `-1024.png` | ícone em PNG (lojas, divulgação) |
-| `public/icon.svg` | favicon + ícone do header do app |
-
-PNGs regeneráveis a partir dos SVGs com `sharp` (ver histórico). Cores: `#38bdf8`
-(sky) e `#34d399` (sprout) sobre `#020617`.
+A identidade é o 🌾 + **PhoneFarm** (azul `#38bdf8` sobre fundo escuro `#020617`).
+Favicon e ícone do header usam o emoji 🌾.
 
 ## Protótipo standalone
 
