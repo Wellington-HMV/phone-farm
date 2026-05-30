@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b3b2e"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <!-- tile -->
+  <rect width="256" height="256" rx="56" fill="url(#tile)"/>
+  <rect x="1.5" y="1.5" width="253" height="253" rx="54.5" fill="none" stroke="#1e293b" stroke-width="3"/>
+  <!-- celular -->
+  <g transform="translate(82,52)">
+    <rect x="0" y="0" width="92" height="152" rx="22" fill="#000" stroke="#334155" stroke-width="3"/>
+    <rect x="7" y="7" width="78" height="138" rx="15" fill="#06231a"/>
+    <rect x="34" y="13" width="24" height="5" rx="2.5" fill="#1e293b"/>
+    <!-- broto -->
+    <g transform="translate(46,120)" stroke="#34d399" stroke-width="4" stroke-linecap="round" fill="none">
+      <path d="M0 0 V-42"/>
+      <path d="M0 -26 q -20 -5 -25 -25 q 20 3 25 25"/>
+      <path d="M0 -34 q 20 -5 25 -25 q -20 3 -25 25"/>
+    </g>
+    <circle cx="46" cy="78" r="4" fill="#38bdf8"/>
+  </g>
+</svg>

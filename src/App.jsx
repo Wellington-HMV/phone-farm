@@ -108,7 +108,7 @@ export default function App() {
       <header className="sticky top-0 z-40 backdrop-blur bg-slate-950/80 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-5 py-3 flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🌾</span>
+            <img src="/icon.svg" alt="" className="h-7 w-7 rounded-lg" />
             <h1 className="text-lg font-bold tracking-tight">
               Phone<span className="text-sky-400">Farm</span>
             </h1>
