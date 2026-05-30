@@ -146,6 +146,22 @@ Ver fases em `PLANO.md`. Imediato:
 2. Fase 1: integrar `ws-scrcpy` p/ tela real de 1 Android no `FakeScreen`.
 3. Fase 2: subir `redroid` em Docker e conectar N telas.
 
+## App desktop / instalador (Electron)
+
+Empacota tudo num app de desktop: a janela abre a UI e, por dentro, sobe o backend
+(que serve front + API + WS). 1 processo, 1 clique.
+
+```bash
+npm run build                 # gera dist/ (front)
+cd server && npm install      # deps do backend (vão junto no pacote)
+cd ../desktop && npm install  # electron + electron-builder
+npm start                     # roda o app desktop (dev)
+npm run dist                  # gera o instalador Windows em desktop/release/
+```
+
+O instalador **não** inclui o Android SDK/emulador — o usuário instala o SDK e aceita
+os termos do Google (ver `LICENSE`). O app apenas orquestra via `adb`/`emulator`.
+
 ## Marca
 
 A identidade é o 🌾 + **PhoneFarm** (azul `#38bdf8` sobre fundo escuro `#020617`).

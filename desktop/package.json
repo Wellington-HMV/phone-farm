@@ -1,0 +1,34 @@
+{
+  "name": "phone-farm-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Phone Farm — app desktop (Electron) que sobe o backend e abre a UI",
+  "author": "Wellington (Wellington-HMV)",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.wellingtonhmv.phonefarm",
+    "productName": "Phone Farm",
+    "directories": { "output": "release" },
+    "files": ["main.cjs", "package.json"],
+    "extraResources": [
+      { "from": "../dist", "to": "dist" },
+      { "from": "../server", "to": "server", "filter": ["**/*", "!**/*.map", "!**/.cache/**"] }
+    ],
+    "win": { "target": ["nsis"], "signAndEditExecutable": false },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "shortcutName": "Phone Farm"
+    }
+  },
+  "devDependencies": {
+    "electron": "^31.7.6",
+    "electron-builder": "^24.13.3"
+  }
+}

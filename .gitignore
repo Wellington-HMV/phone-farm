@@ -1,6 +1,7 @@
 node_modules
 dist
 dist-ssr
+desktop/release
 *.local
 .DS_Store
 .vite

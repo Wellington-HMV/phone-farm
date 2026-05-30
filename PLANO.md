@@ -217,7 +217,12 @@ instala o SDK e aceita os termos do Google (ver `LICENSE`).
 - [x] **Servir o front pelo backend (1 processo):** `express.static(dist)` + fallback
       SPA; API/WS/streams na mesma porta (:4000). `npm start` (build+serve) ou
       `npm run serve`. Validado real (grade espelhando 2 devices em :4000, sem vite).
-- [ ] Empacotar como app instalável (Electron ou serviço Windows + tray) — 1 clique
+- [x] **Empacotar como app instalável (Electron) — 1 clique:** `desktop/` (Electron
+      main sobe o backend via ELECTRON_RUN_AS_NODE e abre a janela nele).
+      `electron-builder` → NSIS one-click `Phone Farm Setup 0.1.0.exe` (~82MB).
+      Validado real: app empacotado sobe server (:4317) + conecta emuladores.
+      Gotchas: `win.signAndEditExecutable:false` (winCodeSign.7z falha no 7z por
+      symlinks macOS); sem assinatura (SmartScreen avisa) e sem ícone custom ainda.
 - [ ] `sharp` é nativo → bundlar o binário certo por plataforma (win/mac/linux)
 - [ ] Detector de pré-requisitos: SDK, platform-tools, system-image, virtualização
       (WHPX/KVM) — com instruções/links se faltar (sem baixar binário do Google)
