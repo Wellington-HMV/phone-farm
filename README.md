@@ -82,6 +82,8 @@ npm install && npm run dev
 | POST | `/api/devices/:id/openurl` | abre URL no device (`{url}` → `am start VIEW`) |
 | POST | `/api/devices/:id/rotate` | gira a tela (`{deg}` 0/90/180/270) |
 | GET | `/api/images` | system-images instaladas + perfis de device (p/ provisionar) |
+| GET | `/api/script/help` | ações suportadas + exemplo do roteiro |
+| POST | `/api/devices/:id/script` | roda um roteiro (`{script}`) no device, passo a passo |
 | POST | `/api/uploads` | sobe APK 1× (multipart `apk`) → `{token}` p/ reusar |
 | POST | `/api/devices/:id/install` | instala APK por `{token}` (`adb install -r -g`) |
 | GET | `/api/devices/:id/record?seconds=` | grava a tela e baixa o `.mp4` (`screenrecord`) |
@@ -161,6 +163,25 @@ npm run dist                  # gera o instalador Windows em desktop/release/
 
 O instalador **não** inclui o Android SDK/emulador — o usuário instala o SDK e aceita
 os termos do Google (ver `LICENSE`). O app apenas orquestra via `adb`/`emulator`.
+
+## Roteiro de automação (script)
+
+Botão **▶ Script** na toolbar abre um editor. 1 ação por linha; roda nos devices
+**selecionados** (ou todos online) em paralelo, com resultado passo a passo.
+
+```
+# 1 ação por linha · # = comentário · coords 0–1
+key home              # back | home | recents | power | volup | voldown
+tap 0.5 0.92
+swipe 0.5 0.8 0.5 0.25 300
+text Olá mundo        # precisa de um campo de texto focado
+openurl https://example.com
+rotate 90
+wait 800              # ou: sleep 800
+```
+
+Falha num passo não aborta o roteiro — cada passo reporta ✓/✕. Mesmas ações do
+controle manual (via `adb input`). Servidor de automação completo (Appium) é futuro.
 
 ## Licença / trial (7 dias)
 

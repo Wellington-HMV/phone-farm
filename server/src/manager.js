@@ -2,6 +2,9 @@
 // Faz poll da fonte, mescla status de teste (mantido aqui), e emite "change".
 
 import { EventEmitter } from "node:events";
+import { parseScript } from "./script.js";
+
+const delay = (ms) => new Promise((r) => setTimeout(r, Math.max(0, Math.min(60000, ms || 0))));
 
 export class DeviceManager extends EventEmitter {
   constructor(source, { pollMs = 2000, emulators = null } = {}) {
@@ -136,6 +139,38 @@ export class DeviceManager extends EventEmitter {
 
   async screenshot(id) {
     return this.source.screenshot(id);
+  }
+
+  /** Executa um passo do roteiro no device. */
+  async _execStep(id, s) {
+    const a = s.args;
+    switch (s.action) {
+      case "key": return this.source.input(id, a[0]);
+      case "tap": return this.source.tap(id, Number(a[0]), Number(a[1]));
+      case "swipe": return this.source.swipe(id, Number(a[0]), Number(a[1]), Number(a[2]), Number(a[3]), Number(a[4]) || 300);
+      case "text": return this.source.text(id, s.rest);
+      case "openurl": return this.source.openUrl(id, s.rest);
+      case "rotate": return this.source.rotate(id, Number(a[0]) || 90);
+      case "wait":
+      case "sleep": await delay(Number(a[0])); return { ok: true };
+      default: return { ok: false, error: `ação desconhecida: ${s.action}` };
+    }
+  }
+
+  /** Roda o roteiro inteiro num device; retorna o resultado passo a passo. */
+  async runScript(id, text) {
+    const steps = parseScript(text);
+    const results = [];
+    for (const s of steps) {
+      if (s.error) { results.push({ n: s.n, raw: s.raw, ok: false, error: s.error }); continue; }
+      try {
+        const r = await this._execStep(id, s);
+        results.push({ n: s.n, raw: s.raw, ok: r?.ok !== false, error: r?.error });
+      } catch (e) {
+        results.push({ n: s.n, raw: s.raw, ok: false, error: e.message });
+      }
+    }
+    return { ok: results.every((r) => r.ok), total: results.length, steps: results };
   }
 
   async provision() {

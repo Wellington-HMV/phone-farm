@@ -103,6 +103,20 @@ export function openUrl(id, url) {
   });
 }
 
+export async function scriptHelp() {
+  const r = await fetch("/api/script/help");
+  return r.json(); // { actions, example }
+}
+
+export async function runScript(id, script) {
+  const r = await fetch(`/api/devices/${encodeURIComponent(id)}/script`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ script }),
+  });
+  return r.json(); // { ok, total, steps:[{n,raw,ok,error}] }
+}
+
 export function rotate(id, deg = 90) {
   return fetch(`/api/devices/${encodeURIComponent(id)}/rotate`, {
     method: "POST",

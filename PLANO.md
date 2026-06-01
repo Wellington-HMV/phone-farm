@@ -131,6 +131,13 @@ devices). Estudar, mas não copiar — começamos mais simples.
 | **4** | Escala & fidelidade (débitos #2/#3) | ⏳ adiado |
 | **5** | Empacotamento / distribuição | ⏳ futuro |
 
+### Roteiro de automação (feito 2026-06-01)
+- [x] Mini-DSL (1 ação/linha: key/tap/swipe/text/openurl/rotate/wait) — `server/src/script.js`
+- [x] `manager.runScript` executa passo a passo; falha não aborta; reporta ✓/✕ por passo
+- [x] Rotas `/api/script/help` + `/api/devices/:id/script`; `ScriptModal` + botão "▶ Script"
+- [x] Roda nos selecionados (ou todos online) em paralelo. Validado real (2 emuladores)
+- [ ] Blocos/loops (repeat), variáveis, gravar-e-reproduzir, Appium (automação avançada)
+
 ### Modelo de interação (UX da v0.1)
 - **Grade:** espelha a tela **real** do device ao vivo (só visualização, não interativa).
   Clique = selecionar (batch). **Duplo-clique** (ou ⤢) = expandir.

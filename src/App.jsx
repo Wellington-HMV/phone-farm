@@ -7,10 +7,12 @@ import PhoneRow from "./components/PhoneRow.jsx";
 import FocusModal from "./components/FocusModal.jsx";
 import EmulatorBar from "./components/EmulatorBar.jsx";
 import ProvisionModal from "./components/ProvisionModal.jsx";
+import ScriptModal from "./components/ScriptModal.jsx";
 
 export default function App() {
   const { devices, source, connected, runSuite, deviceAction } = useDevices();
   const [provisionOpen, setProvisionOpen] = useState(false);
+  const [scriptOpen, setScriptOpen] = useState(false);
   const [batchMsg, setBatchMsg] = useState("");
   const batchApk = useRef(null);
 
@@ -177,6 +179,13 @@ export default function App() {
         </div>
         <div className="flex-1" />
         <button
+          onClick={() => setScriptOpen(true)}
+          className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-sky-600 hover:text-white"
+          title="rodar um roteiro de ações nos selecionados (ou todos online)"
+        >
+          ▶ Script
+        </button>
+        <button
           onClick={() => setLiveGrid((v) => !v)}
           className={`text-xs px-2 py-1 rounded ${liveGrid ? "bg-rose-600 text-white" : "bg-slate-800 text-slate-400"}`}
           title="espelhar a tela real do device na grade (só visualização; desligue p/ aliviar com muitos devices)"
@@ -275,6 +284,11 @@ export default function App() {
 
       <FocusModal device={focus} onClose={() => setFocus(null)} onAction={deviceAction} />
       <ProvisionModal open={provisionOpen} onClose={() => setProvisionOpen(false)} />
+      <ScriptModal
+        open={scriptOpen}
+        targets={selected.size ? [...selected] : devices.filter((d) => d.status === "online").map((d) => d.id)}
+        onClose={() => setScriptOpen(false)}
+      />
     </div>
   );
 }

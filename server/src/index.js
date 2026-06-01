@@ -15,6 +15,7 @@ import { DeviceManager } from "./manager.js";
 import { createEmulatorManager, sdkAvailable, listImages, DEVICE_PROFILES } from "./emulators.js";
 import { startMjpeg } from "./stream.js";
 import { shrink } from "./frame.js";
+import { SCRIPT_ACTIONS, SCRIPT_EXAMPLE } from "./script.js";
 
 const PORT = process.env.PORT || 4000;
 
@@ -111,6 +112,12 @@ app.post("/api/devices/:id/openurl", async (req, res) => {
 
 app.post("/api/devices/:id/rotate", async (req, res) => {
   res.json(await manager.rotate(req.params.id, Number(req.body?.deg) || 90));
+});
+
+// roteiro de automação (mini-DSL): executa os passos no device
+app.get("/api/script/help", (_req, res) => res.json({ actions: SCRIPT_ACTIONS, example: SCRIPT_EXAMPLE }));
+app.post("/api/devices/:id/script", async (req, res) => {
+  res.json(await manager.runScript(req.params.id, req.body?.script || ""));
 });
 
 // sobe APK 1x -> token; depois instala por token em quantos devices quiser
