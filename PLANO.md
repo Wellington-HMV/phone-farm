@@ -136,7 +136,29 @@ devices). Estudar, mas não copiar — começamos mais simples.
 - [x] `manager.runScript` executa passo a passo; falha não aborta; reporta ✓/✕ por passo
 - [x] Rotas `/api/script/help` + `/api/devices/:id/script`; `ScriptModal` + botão "▶ Script"
 - [x] Roda nos selecionados (ou todos online) em paralelo. Validado real (2 emuladores)
-- [ ] Blocos/loops (repeat), variáveis, gravar-e-reproduzir, Appium (automação avançada)
+- [ ] Blocos/loops (repeat), variáveis, Appium (automação avançada)
+
+### Gravar-e-reproduzir fluxo (feito 2026-06-02)
+Grava as ações reais feitas **no modal do emulador** e as salva como roteiro
+reexecutável (reusa a mini-DSL/`runScript` existentes). Captura só com o modal aberto.
+- [x] `useRecorder` (`src/hooks/useRecorder.js`): toggle gravando; cada ação vira linha
+      da DSL; insere `wait <ms>` automático pelo tempo real entre ações (replay no ritmo)
+- [x] Captura: toque/arraste/long-press (`LiveScreen` via prop `onRecord`), teclas
+      (Back/Home/Recent/Power/Vol→`key`), texto (`text`), URL (`openurl`), girar (`rotate`)
+- [x] Salvar com nome — pré-preenche com **processo/app em foco** (`device.app`, fallback nome)
+- [x] Persistência: `~/.phone-farm/scripts.json` (sobrevive a rebuild), escrita atômica —
+      `server/src/scriptsStore.js` + rotas `GET/POST/DELETE /api/scripts`
+- [x] Botão 📜 no modal lista fluxos salvos: ▶ roda no device atual, 🗑 exclui
+- [x] `ScriptModal` ganha dropdown "carregar fluxo salvo" → reusa fluxo em lote (N devices)
+- [x] Botão **📜 Roteiros** na toolbar (`SavedScriptsModal`): lista global, preview dos passos,
+      rodar nos alvos, excluir. Lista é **global** (mesma `/api/scripts` em todo lugar)
+- [x] **VALIDADO REAL (2026-06-02):** gravado no Pixel_7 (tap+home+back, c/ waits automáticos)
+      → salvo → reexecutado OK em emulator-5554 **e** emulator-5556 (roda em qualquer device)
+- [x] **Fix:** `adb shell input` cold-starta JVM no emulador (~10–12s/chamada); timeout do
+      `_run` em adbSource subiu de 8s→**25s** (antes estourava → "Command failed" em key/tap)
+- [ ] Coords são normalizadas (0–1) → robusto a resolução, mas frágil a mudança de layout do app
+- [ ] Streams MJPEG concorrentes saturam o adb server (screencap) → input pode falhar sob
+      carga; mitigar (fila de comandos adb / menos fps) é débito
 
 ### Modelo de interação (UX da v0.1)
 - **Grade:** espelha a tela **real** do device ao vivo (só visualização, não interativa).

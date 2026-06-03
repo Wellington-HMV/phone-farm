@@ -7,7 +7,7 @@ import { streamUrl, tap, swipe } from "../api/client.js";
  * arraste vira `input swipe`, mapeando coords da imagem p/ a resolução real.
  * Usa object-contain + cálculo de letterbox p/ o toque cair no lugar certo.
  */
-export default function LiveScreen({ device, fps = 3, width = 0, quality = 60, interactive = false }) {
+export default function LiveScreen({ device, fps = 3, width = 0, quality = 60, interactive = false, onRecord }) {
   const imgRef = useRef(null);
   const down = useRef(null); // ponto inicial (coords do device)
   const [ok, setOk] = useState(true);
@@ -56,11 +56,18 @@ export default function LiveScreen({ device, fps = 3, width = 0, quality = 60, i
     showRipple(b.ex, b.ey);
     const dist = Math.hypot(b.nx - a.nx, b.ny - a.ny); // em fração (0..1)
     const held = performance.now() - a.t;
+    const f = (n) => n.toFixed(3);
     if (dist < 0.02) {
-      if (held > 450) swipe(device.id, a.nx, a.ny, a.nx, a.ny, 600); // long-press
-      else tap(device.id, a.nx, a.ny);
+      if (held > 450) {
+        swipe(device.id, a.nx, a.ny, a.nx, a.ny, 600); // long-press
+        onRecord?.(`swipe ${f(a.nx)} ${f(a.ny)} ${f(a.nx)} ${f(a.ny)} 600`);
+      } else {
+        tap(device.id, a.nx, a.ny);
+        onRecord?.(`tap ${f(a.nx)} ${f(a.ny)}`);
+      }
     } else {
       swipe(device.id, a.nx, a.ny, b.nx, b.ny, 200); // arraste
+      onRecord?.(`swipe ${f(a.nx)} ${f(a.ny)} ${f(b.nx)} ${f(b.ny)} 200`);
     }
   };
 

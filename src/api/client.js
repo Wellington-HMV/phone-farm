@@ -117,6 +117,26 @@ export async function runScript(id, script) {
   return r.json(); // { ok, total, steps:[{n,raw,ok,error}] }
 }
 
+// ---- roteiros salvos (fluxos gravados) ----
+export async function listSavedScripts() {
+  const r = await fetch("/api/scripts");
+  return r.json(); // { scripts: [{id,name,text,device,createdAt}] }
+}
+
+export async function saveScript({ name, text, device } = {}) {
+  const r = await fetch("/api/scripts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, text, device }),
+  });
+  return r.json(); // { ok, script } | { ok:false, error }
+}
+
+export async function deleteScript(id) {
+  const r = await fetch(`/api/scripts/${encodeURIComponent(id)}`, { method: "DELETE" });
+  return r.json(); // { ok } | { ok:false, error }
+}
+
 export function rotate(id, deg = 90) {
   return fetch(`/api/devices/${encodeURIComponent(id)}/rotate`, {
     method: "POST",

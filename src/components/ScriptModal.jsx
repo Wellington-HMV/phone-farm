@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { scriptHelp, runScript } from "../api/client.js";
+import { scriptHelp, runScript, listSavedScripts } from "../api/client.js";
 
 /**
  * Editor de roteiro de automação. Roda o script (1 ação por linha) nos devices alvo
@@ -10,6 +10,7 @@ export default function ScriptModal({ open, targets, onClose }) {
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState(null); // { [id]: {ok,total,steps} }
   const [help, setHelp] = useState(null);
+  const [saved, setSaved] = useState([]); // fluxos salvos no servidor
   const loaded = useRef(false);
 
   useEffect(() => {
@@ -17,6 +18,10 @@ export default function ScriptModal({ open, targets, onClose }) {
     loaded.current = true;
     scriptHelp().then((h) => { setHelp(h); if (!text) setText(h.example || ""); }).catch(() => {});
   }, [open, text]);
+
+  useEffect(() => {
+    if (open) listSavedScripts().then((r) => setSaved(r?.scripts || [])).catch(() => {});
+  }, [open]);
 
   if (!open) return null;
 
@@ -40,6 +45,22 @@ export default function ScriptModal({ open, targets, onClose }) {
           <h2 className="text-lg font-semibold text-white">▶ Roteiro de automação</h2>
           <span className="text-xs text-slate-400">{targets.length} device(s) alvo</span>
         </div>
+
+        {saved.length > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500">📜 Fluxos salvos:</span>
+            <select
+              defaultValue=""
+              onChange={(e) => { const s = saved.find((x) => x.id === e.target.value); if (s) setText(s.text); e.target.value = ""; }}
+              className="flex-1 bg-slate-950 ring-1 ring-slate-800 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-sky-500"
+            >
+              <option value="">carregar um fluxo gravado…</option>
+              {saved.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}{s.device ? ` (gravado em ${s.device})` : ""}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <textarea
           value={text}

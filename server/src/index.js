@@ -16,6 +16,7 @@ import { createEmulatorManager, sdkAvailable, listImages, DEVICE_PROFILES } from
 import { startMjpeg } from "./stream.js";
 import { shrink } from "./frame.js";
 import { SCRIPT_ACTIONS, SCRIPT_EXAMPLE } from "./script.js";
+import { listScripts, saveScript, deleteScript } from "./scriptsStore.js";
 
 const PORT = process.env.PORT || 4000;
 
@@ -118,6 +119,17 @@ app.post("/api/devices/:id/rotate", async (req, res) => {
 app.get("/api/script/help", (_req, res) => res.json({ actions: SCRIPT_ACTIONS, example: SCRIPT_EXAMPLE }));
 app.post("/api/devices/:id/script", async (req, res) => {
   res.json(await manager.runScript(req.params.id, req.body?.script || ""));
+});
+
+// roteiros salvos (fluxos gravados no modal do emulador) — CRUD leve
+app.get("/api/scripts", (_req, res) => res.json({ scripts: listScripts() }));
+app.post("/api/scripts", (req, res) => {
+  const r = saveScript(req.body || {});
+  res.status(r.ok ? 200 : 400).json(r);
+});
+app.delete("/api/scripts/:id", (req, res) => {
+  const r = deleteScript(req.params.id);
+  res.status(r.ok ? 200 : 404).json(r);
 });
 
 // sobe APK 1x -> token; depois instala por token em quantos devices quiser

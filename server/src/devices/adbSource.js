@@ -121,9 +121,11 @@ export function createAdbSource() {
     },
 
     // helper: nunca lança — falha de adb vira { ok:false } (não derruba o backend)
+    // timeout folgado (25s): `adb shell input` cold-starta uma JVM no Android e
+    // pode levar 10–12s por chamada em emulador — o default de 8s estourava.
     async _run(args, extra = {}) {
       try {
-        await sh(args, extra);
+        await sh(args, { timeout: 25000, ...extra });
         return { ok: true };
       } catch (e) {
         return { ok: false, error: (e.message || "falha adb").split("\n")[0] };
