@@ -29,37 +29,66 @@ modo **mock** para desenvolvimento da UI.
 > **Interação:** grade = espelho (só visual); **duplo-clique** ou ⤢ expande; modal =
 > toque/arraste/long-press + Back/Home/Power/Vol/Girar/URL/texto/APK/gravar. Lista = animação leve.
 
-## Pré-requisitos p/ emuladores locais
+## Pré-requisitos
 
-- **Android SDK** (Android Studio já basta) com `emulator`, `platform-tools`, `cmdline-tools`.
-- `ANDROID_HOME` (ou `ANDROID_SDK_ROOT`) apontando p/ o SDK.
-- Pelo menos 1 **system-image** + 1 AVD (crie no Android Studio ou via "+ Provisionar").
-- Virtualização ligada (WHPX no Windows / KVM no Linux) p/ emulador acelerado.
+### Obrigatório
 
-## Rodar
+- **Node.js 18+** (e `npm`) — [nodejs.org](https://nodejs.org)
+- **Git** p/ clonar o repositório
 
-### Produção — 1 processo só (recomendado)
+> Só isso já roda o app em modo **mock** (devices falsos) — útil p/ conhecer a UI
+> ou desenvolver o frontend sem nenhum Android por perto.
+
+### Para devices reais (emuladores / USB)
+
+- **Android SDK** (instalar o [Android Studio](https://developer.android.com/studio)
+  já basta) com `emulator`, `platform-tools` e `cmdline-tools`.
+- Variável de ambiente `ANDROID_HOME` (ou `ANDROID_SDK_ROOT`) apontando p/ o SDK.
+  - Windows (padrão): `%LOCALAPPDATA%\Android\Sdk`
+  - Linux/macOS (padrão): `~/Android/Sdk` / `~/Library/Android/sdk`
+- Pelo menos 1 **system-image** + 1 AVD (crie no Android Studio ou pela própria UI
+  via "+ Provisionar").
+- **Virtualização** ligada na BIOS (WHPX no Windows / KVM no Linux) p/ emulador acelerado.
+- Device físico via USB: ative **Depuração USB** nas opções de desenvolvedor e
+  confira com `adb devices`.
+
+## Como rodar — passo a passo
+
+### 1. Clonar e instalar
+
+```bash
+git clone https://github.com/Wellington-HMV/phone-farm.git
+cd phone-farm
+npm install               # deps do front
+cd server && npm install  # deps do back
+cd ..
+```
+
+### 2. Subir (produção — 1 processo só, recomendado)
 
 O backend serve o frontend buildado (`dist/`) + API + WebSocket na **mesma porta**.
 
 ```bash
-npm install               # deps do front
-cd server && npm install  # deps do back
-cd .. && npm start         # build do front + sobe o backend → http://localhost:4000
+npm start                 # build do front + sobe o backend → http://localhost:4000
 ```
 
-Já buildado, é só `npm run serve` (backend serve o `dist/` existente).
+Abra **http://localhost:4000**. Com SDK instalado, os AVDs aparecem na barra
+**Emuladores (AVD)** — clique ▶ p/ subir um. Sem SDK, entra em modo mock.
+
+Já buildado antes? `npm run serve` pula o build (backend serve o `dist/` existente).
 Force a fonte: `FORCE_MOCK=1` (mock) ou `FORCE_ADB=1` (adb) antes do comando.
 
-### Dev — 2 processos (hot reload)
+### 3. Dev — 2 processos (hot reload)
 
 ```bash
 # terminal 1 — backend (porta 4000)
-cd server && npm install && npm run dev
+cd server && npm run dev
 
 # terminal 2 — frontend (porta 5173, proxia /api e /ws p/ o backend)
-npm install && npm run dev
+npm run dev
 ```
+
+Abra **http://localhost:5173** (frontend com hot reload).
 
 ## Stack
 
@@ -183,24 +212,11 @@ wait 800              # ou: sleep 800
 Falha num passo não aborta o roteiro — cada passo reporta ✓/✕. Mesmas ações do
 controle manual (via `adb input`). Servidor de automação completo (Appium) é futuro.
 
-## Licença / trial (7 dias)
+## Licença
 
-O app desktop tem avaliação de **7 dias**. Depois, abre a tela de ativação pedindo uma
-**chave de licença** (e o **ID da instalação** p/ o cliente enviar ao contato).
-
-- Estado em `userData/pf-state.json` (`installId`, `firstRun`, `key`).
-- Chave = `HMAC(SECRET, installId)` — offline, determinística por instalação.
-- **Vendedor** gera a chave com o ID que o cliente mandar:
-  ```bash
-  node desktop/keygen.cjs <installId>
-  ```
-
-**Configure antes de distribuir:**
-- `desktop/trial.cjs` → troque `SECRET` (default é `…CHANGE-ME`) por um segredo **seu e privado**.
-- `desktop/gate.html` → troque `CONTACT` pelo seu e-mail/contato.
-
-> ⚠️ Trial client-side **segura usuário honesto**, mas é burlável (apagar o
-> `pf-state.json` reseta). Trava real precisa de **validação no servidor** (débito).
+**MIT** — use, modifique e distribua à vontade (ver [`LICENSE`](./LICENSE)).
+O projeto **não** inclui nem redistribui o Android SDK/emulador — esses são do
+Google e o usuário instala/aceita os termos por conta própria.
 
 ## Marca
 

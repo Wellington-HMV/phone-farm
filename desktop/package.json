@@ -17,9 +17,6 @@
     },
     "files": [
       "main.cjs",
-      "preload.cjs",
-      "trial.cjs",
-      "gate.html",
       "package.json",
       "build/icon.ico"
     ],

@@ -260,13 +260,12 @@ instala o SDK e aceita os termos do Google (ver `LICENSE`).
 - [ ] Detector de pré-requisitos: SDK, platform-tools, system-image, virtualização
       (WHPX/KVM) — com instruções/links se faltar (sem baixar binário do Google)
 - [ ] Config externável (porta, caminho do SDK, pool de AVDs a auto-subir)
-- [x] **Trial 7 dias + ativação por chave (client-side)** (2026-05-30): repo tornado
-      privado; `trial.cjs` (estado em userData, chave HMAC por installId), `gate.html`
-      (tela de expirado: mostra installId + contato p/ estender), `keygen.cjs` (vendor).
-      Validado: trial→expired→keygen→ativar→licensed. **Config:** trocar `SECRET`
-      (trial.cjs) e `CONTACT` (gate.html). Ressalva: burlável (apagar pf-state.json).
-- [ ] **Trava real = servidor de licença** (valida online; resiste a reset) — débito
-- [ ] Distribuição do .exe por canal próprio (repo privado → release não é pública)
+- [x] ~~Trial 7 dias + ativação por chave (client-side)~~ **REMOVIDO** (2026-06-05):
+      projeto virou **open source (MIT)**, repo público. Trial/keygen/gate apagados
+      (existiam em `trial.cjs`/`keygen.cjs`/`gate.html` — ver histórico git até
+      44632df se precisar resgatar). Monetização futura ≠ venda de licença do app:
+      serviço/suporte/hosted. Decisão: estrelas + adoção > trial burlável.
+- [ ] Distribuição do .exe via **GitHub Releases** (repo agora é público)
 
 ---
 

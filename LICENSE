@@ -1,33 +1,32 @@
-Phone Farm — Licença Proprietária
-Copyright (c) 2026 Wellington (Wellington-HMV). Todos os direitos reservados.
+MIT License
 
-Este software e o código-fonte associado ("Software") são propriedade do detentor
-dos direitos autorais acima. O código pode estar visível publicamente, mas isso NÃO
-concede nenhuma licença ou direito de uso.
+Copyright (c) 2026 Wellington (Wellington-HMV)
 
-É PROIBIDO, sem permissão prévia, expressa e por escrito do detentor dos direitos:
-  - usar o Software para qualquer finalidade (comercial ou não);
-  - copiar, modificar, mesclar, publicar ou criar trabalhos derivados;
-  - distribuir, sublicenciar, vender, alugar ou hospedar o Software ou parte dele.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Todos os direitos não concedidos expressamente são reservados ao detentor.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Para licenciar o uso (incluindo uso comercial), contate o detentor dos direitos.
-
-ISENÇÃO: O SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIAS DE QUALQUER TIPO. EM
-NENHUMA HIPÓTESE O DETENTOR SERÁ RESPONSÁVEL POR QUAISQUER DANOS DECORRENTES DO USO.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ----------------------------------------------------------------------------------
-Componentes de terceiros
+Third-party components / Componentes de terceiros
 ----------------------------------------------------------------------------------
-Este projeto depende de bibliotecas de código aberto (React, Vite, Tailwind CSS,
-Express, ws, multer, sharp, entre outras), cada uma sob sua própria licença
-(MIT/Apache-2.0). Tais licenças aplicam-se apenas aos respectivos componentes.
+This project does NOT include or redistribute the Android SDK, Android Emulator,
+system images, or Google services (Google Play / GMS). Those components belong to
+Google and are subject to Google's terms; users must install them and accept
+those terms on their own. This software only orchestrates them via `adb`/`emulator`.
 
-O Software NÃO inclui nem redistribui o Android SDK, o Android Emulator, imagens de
-sistema ou serviços do Google (Google Play / GMS). Esses componentes pertencem ao
-Google e estão sujeitos aos termos do Google; o usuário deve instalá-los e aceitar
-seus termos por conta própria. O Software apenas os orquestra via `adb`/`emulator`.
-
-"Android" é marca do Google LLC. O uso aqui é meramente descritivo; este projeto não
-é afiliado, patrocinado ou endossado pelo Google.
+"Android" is a trademark of Google LLC. Usage here is purely descriptive; this
+project is not affiliated with, sponsored, or endorsed by Google.
