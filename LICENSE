@@ -19,14 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-----------------------------------------------------------------------------------
-Third-party components / Componentes de terceiros
-----------------------------------------------------------------------------------
-This project does NOT include or redistribute the Android SDK, Android Emulator,
-system images, or Google services (Google Play / GMS). Those components belong to
-Google and are subject to Google's terms; users must install them and accept
-those terms on their own. This software only orchestrates them via `adb`/`emulator`.
-
-"Android" is a trademark of Google LLC. Usage here is purely descriptive; this
-project is not affiliated with, sponsored, or endorsed by Google.

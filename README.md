@@ -216,7 +216,7 @@ controle manual (via `adb input`). Servidor de automação completo (Appium) é 
 
 **MIT** — use, modifique e distribua à vontade (ver [`LICENSE`](./LICENSE)).
 O projeto **não** inclui nem redistribui o Android SDK/emulador — esses são do
-Google e o usuário instala/aceita os termos por conta própria.
+Google e o usuário instala/aceita os termos por conta própria (ver [`NOTICE`](./NOTICE)).
 
 ## Marca
 
