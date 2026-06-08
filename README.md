@@ -90,6 +90,43 @@ npm run dev
 
 Abra **http://localhost:5173** (frontend com hot reload).
 
+## Casca web hospedada (usar o hardware da própria máquina pelo navegador)
+
+A UI pode ser **hospedada** (ex.: GitHub Pages) e controlar o **hardware da máquina
+do usuário** — desde que ele rode o **agente local** e pareie. A página web não
+acessa adb/emulador direto (sandbox do browser proíbe); ela conversa com o agente
+que roda no PC dele.
+
+```
+[navegador: casca web hospedada]  ──token──▶  [agente local :4000]  ──▶  adb / emulador
+        (qualquer domínio)        ◀── WS ───   (só 127.0.0.1)
+```
+
+**Como usar:**
+
+1. O usuário roda o agente (= este backend) na máquina dele:
+   ```bash
+   git clone https://github.com/Wellington-HMV/phone-farm.git
+   cd phone-farm && npm install && cd server && npm install && npm start
+   ```
+2. O agente imprime no console a **URL** (`http://localhost:4000`) e um **token**.
+3. Na casca web, ele cola URL + token na tela de pareamento → pronto, controla os
+   devices da própria máquina pelo navegador.
+
+**Segurança (por que é seguro ceder isso):**
+
+- O agente escuta **só `127.0.0.1`** — a LAN não alcança (use `PF_BIND=0.0.0.0` p/ expor, por sua conta).
+- Requisição **mesma-origem** (app desktop / `npm start`) passa **sem token** — zero atrito.
+- Requisição **cross-origin** (casca hospedada) exige **token de pareamento** + origem
+  permitida. Como o navegador sempre manda `Origin` cross-origin, **um site malicioso
+  aberto noutra aba não consegue comandar seu adb** (não tem o token) — barra CSRF.
+- Variáveis: `PF_TOKEN` (fixar token), `PF_WEB_ORIGINS` (csv de origens; default `*` =
+  qualquer, mas token segue obrigatório), `PF_BIND` (interface).
+
+> Publicar a casca: `npm run build:web` gera o bundle (base `/phone-farm/`). O workflow
+> `.github/workflows/pages.yml` faz deploy no GitHub Pages a cada push na `main`.
+> (Ative Pages em **Settings → Pages → Source: GitHub Actions**.)
+
 ## Stack
 
 - **Frontend:** Vite 5 + React 18 + Tailwind 3.4 (Node 18 compatível)

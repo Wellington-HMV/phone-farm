@@ -1,176 +1,167 @@
-// Client da API do backend (REST + WebSocket). Tudo passa pelo proxy do Vite.
+// Client da API do backend (REST + WebSocket).
+//
+// Em build local/desktop, `apiBase()` é vazio → URLs relativas (mesma-origem,
+// proxy do Vite em dev). Em build hospedado, aponta p/ o agente local pareado
+// e anexa o token (header X-PF-Token nos fetch; ?token= em <img>/download/ws).
+
+import { apiBase, apiToken } from "./config.js";
+
+function apiUrl(path) {
+  return apiBase() + path;
+}
+
+/** Anexa ?token= numa URL (p/ <img>/download/ws que não mandam header). */
+function withToken(u) {
+  const t = apiToken();
+  if (!t) return u;
+  return u + (u.includes("?") ? "&" : "?") + "token=" + encodeURIComponent(t);
+}
+
+function authHeaders(extra = {}) {
+  const t = apiToken();
+  return t ? { ...extra, "X-PF-Token": t } : extra;
+}
+
+/** fetch GET → json */
+async function getJson(path) {
+  const r = await fetch(apiUrl(path), { headers: authHeaders() });
+  if (!r.ok) throw new Error(`GET ${path} ${r.status}`);
+  return r.json();
+}
+
+/** fetch com corpo json (POST/DELETE) → json */
+async function sendJson(path, body, method = "POST") {
+  const r = await fetch(apiUrl(path), {
+    method,
+    headers: authHeaders(body !== undefined ? { "Content-Type": "application/json" } : {}),
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+  return r.json();
+}
+
+/** Testa a conexão com o agente (usado no pareamento). */
+export async function health() {
+  return getJson("/api/health"); // { ok, source, devices }
+}
 
 export async function fetchDevices() {
-  const r = await fetch("/api/devices");
-  if (!r.ok) throw new Error(`GET /api/devices ${r.status}`);
-  return r.json(); // { source, devices }
+  return getJson("/api/devices"); // { source, devices }
 }
 
 export async function runSuite(ids) {
-  const r = await fetch("/api/suite", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ids }),
-  });
-  return r.json();
+  return sendJson("/api/suite", { ids });
 }
 
 export async function deviceAction(id, action) {
-  const r = await fetch(`/api/devices/${encodeURIComponent(id)}/action`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action }),
-  });
-  return r.json();
+  return sendJson(`/api/devices/${encodeURIComponent(id)}/action`, { action });
 }
 
 export async function provision() {
-  const r = await fetch("/api/provision", { method: "POST" });
-  return r.json();
+  return sendJson("/api/provision", undefined);
 }
 
 // ---- emuladores (AVD) locais ----
 export async function listEmulators() {
-  const r = await fetch("/api/emulators");
-  return r.json(); // { sdk, avds: [{name, running, serial}] }
+  return getJson("/api/emulators"); // { sdk, avds: [{name, running, serial}] }
 }
 
 export async function listImages() {
-  const r = await fetch("/api/images");
-  return r.json(); // { sdk, images: [{pkg,api,tag,abi,label}], devices: [{id,label}] }
+  return getJson("/api/images"); // { sdk, images, devices }
 }
 
 export async function startEmulator(name) {
-  const r = await fetch(`/api/emulators/${encodeURIComponent(name)}/start`, { method: "POST" });
-  return r.json();
+  return sendJson(`/api/emulators/${encodeURIComponent(name)}/start`, undefined);
 }
 
 export async function stopEmulator(name) {
-  const r = await fetch(`/api/emulators/${encodeURIComponent(name)}/stop`, { method: "POST" });
-  return r.json();
+  return sendJson(`/api/emulators/${encodeURIComponent(name)}/stop`, undefined);
 }
 
 export async function createEmulator(name, opts = {}) {
-  const r = await fetch("/api/emulators", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, ...opts }), // opts: { pkg, device }
-  });
-  return r.json();
+  return sendJson("/api/emulators", { name, ...opts }); // opts: { pkg, device }
 }
 
 /** URL do screenshot (204 quando não há frame real, ex.: mock). */
 export function screenshotUrl(id) {
-  return `/api/devices/${encodeURIComponent(id)}/screenshot?t=${Date.now()}`;
+  return withToken(apiUrl(`/api/devices/${encodeURIComponent(id)}/screenshot?t=${Date.now()}`));
 }
 
 /** URL do stream MJPEG ao vivo. w = largura alvo (downscale), q = qualidade JPEG. */
 export function streamUrl(id, { fps = 3, w = 0, q = 60 } = {}) {
   const p = new URLSearchParams({ fps, q });
   if (w) p.set("w", w);
-  return `/api/devices/${encodeURIComponent(id)}/stream?${p}`;
+  return withToken(apiUrl(`/api/devices/${encodeURIComponent(id)}/stream?${p}`));
 }
 
 export function tap(id, x, y) {
-  return fetch(`/api/devices/${encodeURIComponent(id)}/tap`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ x, y }),
-  });
+  return sendJson(`/api/devices/${encodeURIComponent(id)}/tap`, { x, y });
 }
 
 export function swipe(id, x1, y1, x2, y2, ms = 200) {
-  return fetch(`/api/devices/${encodeURIComponent(id)}/swipe`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ x1, y1, x2, y2, ms }),
-  });
+  return sendJson(`/api/devices/${encodeURIComponent(id)}/swipe`, { x1, y1, x2, y2, ms });
 }
 
 export function typeText(id, text) {
-  return fetch(`/api/devices/${encodeURIComponent(id)}/text`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
-  });
+  return sendJson(`/api/devices/${encodeURIComponent(id)}/text`, { text });
 }
 
 export function openUrl(id, url) {
-  return fetch(`/api/devices/${encodeURIComponent(id)}/openurl`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url }),
-  });
+  return sendJson(`/api/devices/${encodeURIComponent(id)}/openurl`, { url });
 }
 
 export async function scriptHelp() {
-  const r = await fetch("/api/script/help");
-  return r.json(); // { actions, example }
+  return getJson("/api/script/help"); // { actions, example }
 }
 
 export async function runScript(id, script) {
-  const r = await fetch(`/api/devices/${encodeURIComponent(id)}/script`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ script }),
-  });
-  return r.json(); // { ok, total, steps:[{n,raw,ok,error}] }
+  return sendJson(`/api/devices/${encodeURIComponent(id)}/script`, { script });
 }
 
 // ---- roteiros salvos (fluxos gravados) ----
 export async function listSavedScripts() {
-  const r = await fetch("/api/scripts");
-  return r.json(); // { scripts: [{id,name,text,device,createdAt}] }
+  return getJson("/api/scripts"); // { scripts: [...] }
 }
 
 export async function saveScript({ name, text, device } = {}) {
-  const r = await fetch("/api/scripts", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, text, device }),
-  });
-  return r.json(); // { ok, script } | { ok:false, error }
+  return sendJson("/api/scripts", { name, text, device });
 }
 
 export async function deleteScript(id) {
-  const r = await fetch(`/api/scripts/${encodeURIComponent(id)}`, { method: "DELETE" });
-  return r.json(); // { ok } | { ok:false, error }
+  return sendJson(`/api/scripts/${encodeURIComponent(id)}`, undefined, "DELETE");
 }
 
 export function rotate(id, deg = 90) {
-  return fetch(`/api/devices/${encodeURIComponent(id)}/rotate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ deg }),
-  });
+  return sendJson(`/api/devices/${encodeURIComponent(id)}/rotate`, { deg });
 }
 
 /** Sobe um APK 1x → retorna {token, name}. Reutilize o token p/ instalar em N devices. */
 export async function uploadApk(file) {
   const fd = new FormData();
   fd.append("apk", file);
-  const r = await fetch("/api/uploads", { method: "POST", body: fd });
+  const r = await fetch(apiUrl("/api/uploads"), { method: "POST", headers: authHeaders(), body: fd });
   return r.json();
 }
 
 export async function installApk(id, token) {
-  const r = await fetch(`/api/devices/${encodeURIComponent(id)}/install`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token }),
-  });
-  return r.json();
+  return sendJson(`/api/devices/${encodeURIComponent(id)}/install`, { token });
 }
 
 /** URL p/ baixar a gravação (dispara screenrecord por `seconds`). */
 export function recordUrl(id, seconds = 10) {
-  return `/api/devices/${encodeURIComponent(id)}/record?seconds=${seconds}`;
+  return withToken(apiUrl(`/api/devices/${encodeURIComponent(id)}/record?seconds=${seconds}`));
 }
 
 /** Abre o WebSocket de estado. onDevices(devices, source) a cada update. */
 export function connectWS(onDevices) {
-  const proto = location.protocol === "https:" ? "wss" : "ws";
-  const ws = new WebSocket(`${proto}://${location.host}/ws`);
+  const base = apiBase();
+  let wsUrl;
+  if (base) {
+    wsUrl = base.replace(/^http/, "ws") + "/ws"; // http→ws, https→wss
+  } else {
+    const proto = location.protocol === "https:" ? "wss" : "ws";
+    wsUrl = `${proto}://${location.host}/ws`;
+  }
+  const ws = new WebSocket(withToken(wsUrl));
   ws.onmessage = (ev) => {
     try {
       const msg = JSON.parse(ev.data);

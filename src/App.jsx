@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { OSES } from "./data/mock.js";
 import { useDevices } from "./hooks/useDevices.js";
 import { uploadApk, installApk } from "./api/client.js";
+import { HOSTED, needsPairing, clearAgent } from "./api/config.js";
 import PhoneCard from "./components/PhoneCard.jsx";
 import PhoneRow from "./components/PhoneRow.jsx";
 import FocusModal from "./components/FocusModal.jsx";
@@ -9,8 +10,10 @@ import EmulatorBar from "./components/EmulatorBar.jsx";
 import ProvisionModal from "./components/ProvisionModal.jsx";
 import ScriptModal from "./components/ScriptModal.jsx";
 import SavedScriptsModal from "./components/SavedScriptsModal.jsx";
+import AgentGate from "./components/AgentGate.jsx";
 
 export default function App() {
+  const [paired, setPaired] = useState(!needsPairing());
   const { devices, source, connected, runSuite, deviceAction } = useDevices();
   const [provisionOpen, setProvisionOpen] = useState(false);
   const [scriptOpen, setScriptOpen] = useState(false);
@@ -87,6 +90,13 @@ export default function App() {
     </button>
   );
 
+  if (!paired) return <AgentGate onPaired={() => setPaired(true)} />;
+
+  const disconnect = () => {
+    clearAgent();
+    setPaired(false);
+  };
+
   const groups = groupOS
     ? OSES.map((os) => ({ os, items: shown.filter((d) => d.os === os) })).filter((g) => g.items.length)
     : [{ os: null, items: shown }];
@@ -144,6 +154,15 @@ export default function App() {
             className={`h-2 w-2 rounded-full ${connected ? "bg-emerald-400 animate-pulse-dot" : "bg-slate-600"}`}
             title={connected ? "WS conectado" : "WS desconectado"}
           />
+          {HOSTED && (
+            <button
+              onClick={disconnect}
+              className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 hover:text-rose-300"
+              title="desconectar do agente local"
+            >
+              ⏏ agente
+            </button>
+          )}
           <div className="flex-1" />
           <div className="flex items-center gap-2 shrink-0">
             <input

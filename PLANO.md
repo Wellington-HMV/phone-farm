@@ -265,7 +265,19 @@ instala o SDK e aceita os termos do Google (ver `LICENSE`).
       (existiam em `trial.cjs`/`keygen.cjs`/`gate.html` — ver histórico git até
       44632df se precisar resgatar). Monetização futura ≠ venda de licença do app:
       serviço/suporte/hosted. Decisão: estrelas + adoção > trial burlável.
-- [ ] Distribuição do .exe via **GitHub Releases** (repo agora é público)
+- [x] Distribuição do .exe via **GitHub Releases** (v0.1.0 pública, 2026-06-05)
+- [x] **Casca web hospedada + agente local** (2026-06-08): UI pode rodar em outro
+      domínio (GitHub Pages) e controlar o hardware da máquina do usuário via
+      **agente local** pareado. `server/src/security.js`: mesma-origem livre (desktop/
+      `npm start` sem atrito), cross-origin exige **token** (`~/.phone-farm/agent.json`,
+      impresso no console) + origem permitida (`PF_WEB_ORIGINS`, default `*`); bind
+      `127.0.0.1` (`PF_BIND`). Browser manda Origin cross-origin → barra CSRF de site
+      malicioso. Cliente: `src/api/config.js` (base+token no localStorage, HOSTED via
+      `--mode web`), client.js roteia base+token (header nos fetch, `?token=` em
+      img/stream/record/ws), `AgentGate.jsx` (tela de pareamento). `npm run build:web`
+      (base `/phone-farm/`) + `.github/workflows/pages.yml`. Validado: porteiro testado
+      (mesma-origem 200 / cross sem token 401 / com token 200). **Pendência:** WebUSB
+      (caminho A) p/ device físico sem instalar nada — não feito.
 
 ---
 

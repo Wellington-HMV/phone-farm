@@ -1,7 +1,6 @@
 // Bootstrap do backend: Express (REST) + ws (WebSocket de estado ao vivo).
 
 import express from "express";
-import cors from "cors";
 import multer from "multer";
 import { WebSocketServer } from "ws";
 import { createServer } from "node:http";
@@ -17,8 +16,11 @@ import { startMjpeg } from "./stream.js";
 import { shrink } from "./frame.js";
 import { SCRIPT_ACTIONS, SCRIPT_EXAMPLE } from "./script.js";
 import { listScripts, saveScript, deleteScript } from "./scriptsStore.js";
+import { loadAgentConfig, makeAuth, makeWsVerify } from "./security.js";
 
 const PORT = process.env.PORT || 4000;
+const HOST = process.env.PF_BIND || "127.0.0.1"; // só loopback; PF_BIND=0.0.0.0 p/ expor na LAN
+const agentCfg = loadAgentConfig();
 
 // Robustez: um comando adb que falha NÃO pode derrubar o backend.
 process.on("unhandledRejection", (e) => console.error("[unhandledRejection]", e?.message || e));
@@ -40,7 +42,8 @@ process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
 
 const app = express();
-app.use(cors());
+// porteiro: mesma-origem livre; cross-origin (casca hospedada) exige token + origem ok
+app.use("/api", makeAuth(agentCfg));
 app.use(express.json());
 
 // upload de APK (staging): sobe 1x, instala em N devices
@@ -213,7 +216,7 @@ if (fs.existsSync(path.join(distDir, "index.html"))) {
 
 // --- HTTP + WS no mesmo servidor ---
 const server = createServer(app);
-const wss = new WebSocketServer({ server, path: "/ws" });
+const wss = new WebSocketServer({ server, path: "/ws", verifyClient: makeWsVerify(agentCfg) });
 
 function send(ws, devices) {
   if (ws.readyState === ws.OPEN)
@@ -228,6 +231,14 @@ manager.on("change", (devices) => {
   for (const ws of wss.clients) send(ws, devices);
 });
 
-server.listen(PORT, () => {
-  console.log(`[phone-farm] backend em http://localhost:${PORT}  (source: ${source.kind})`);
+server.listen(PORT, HOST, () => {
+  console.log(`[phone-farm] backend em http://${HOST}:${PORT}  (source: ${source.kind})`);
+  console.log("");
+  console.log("  ┌─ Casca web hospedada ──────────────────────────────────────────┐");
+  console.log("  │ Pra controlar este agente pela casca web, pareie com:          │");
+  console.log(`  │   URL do agente:  http://localhost:${PORT}`.padEnd(67) + "│");
+  console.log(`  │   Token:          ${agentCfg.token}`.padEnd(67) + "│");
+  console.log("  │ Origens cross-origin permitidas: " + (process.env.PF_WEB_ORIGINS || "* (qualquer; token segue obrigatório)").slice(0, 31).padEnd(31) + "│");
+  console.log("  └────────────────────────────────────────────────────────────────┘");
+  console.log("");
 });
