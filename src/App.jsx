@@ -11,10 +11,25 @@ import ProvisionModal from "./components/ProvisionModal.jsx";
 import ScriptModal from "./components/ScriptModal.jsx";
 import SavedScriptsModal from "./components/SavedScriptsModal.jsx";
 import AgentGate from "./components/AgentGate.jsx";
+import UsbMirror from "./components/UsbMirror.jsx";
+import { webusbSupported, connectUsbDevice } from "./webusb/webadb.js";
 
 export default function App() {
   const [paired, setPaired] = useState(!needsPairing());
+  const [usbConn, setUsbConn] = useState(null);
+  const [usbMsg, setUsbMsg] = useState("");
   const { devices, source, connected, runSuite, deviceAction } = useDevices();
+
+  const connectUsb = async () => {
+    setUsbMsg("Selecione o device no prompt do navegador…");
+    try {
+      const conn = await connectUsbDevice();
+      setUsbConn(conn);
+      setUsbMsg("");
+    } catch (e) {
+      setUsbMsg(e.message);
+    }
+  };
   const [provisionOpen, setProvisionOpen] = useState(false);
   const [scriptOpen, setScriptOpen] = useState(false);
   const [savedOpen, setSavedOpen] = useState(false);
@@ -171,6 +186,15 @@ export default function App() {
               placeholder="buscar device…"
               className="bg-slate-900 ring-1 ring-slate-800 rounded-lg px-3 py-1.5 text-sm w-36 focus:outline-none focus:ring-sky-500"
             />
+            {webusbSupported() && (
+              <button
+                onClick={connectUsb}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-sm whitespace-nowrap"
+                title="conectar um device Android físico por USB — direto no navegador, sem instalar nada"
+              >
+                🔌 Device USB
+              </button>
+            )}
             <button onClick={() => setProvisionOpen(true)} className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm whitespace-nowrap">
               + Provisionar
             </button>
@@ -309,6 +333,14 @@ export default function App() {
           <p className="text-center text-slate-600 py-20">Nenhum device no filtro.</p>
         )}
       </main>
+
+      {usbMsg && (
+        <div className="fixed bottom-4 right-4 z-50 max-w-xs bg-slate-800 ring-1 ring-slate-700 rounded-lg px-3 py-2 text-xs text-slate-300 flex items-start gap-2">
+          <span>{usbMsg}</span>
+          <button onClick={() => setUsbMsg("")} className="text-slate-500 hover:text-slate-200">✕</button>
+        </div>
+      )}
+      {usbConn && <UsbMirror conn={usbConn} onClose={() => setUsbConn(null)} />}
 
       <FocusModal device={focus} onClose={() => setFocus(null)} onAction={deviceAction} />
       <ProvisionModal open={provisionOpen} onClose={() => setProvisionOpen(false)} />

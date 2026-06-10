@@ -90,6 +90,21 @@ npm run dev
 
 Abra **http://localhost:5173** (frontend com hot reload).
 
+## 🔌 Device USB no navegador (WebUSB — zero instalação)
+
+Em **Chrome/Edge** dá pra controlar um Android **físico via cabo USB direto no
+navegador**, sem instalar adb nem o agente. Clique em **🔌 Device USB** no header,
+escolha o aparelho no prompt do navegador e aceite **Depuração USB** no celular.
+
+- ✅ **Zero instalação** — protocolo ADB falado pelo browser via WebUSB ([Tango/ya-webadb](https://github.com/yume-chan/ya-webadb)).
+- ✅ Espelho ao vivo (loop `screencap`), **toque** (clique), **swipe** (arraste) e teclas (Back/Home/Recentes/Power/Vol).
+- ✅ Tudo roda na máquina do usuário; nada sai do navegador.
+- ❌ Só **Chromium** (sem Firefox/Safari) e só **device físico** — emulador (AVD) é binário local, precisa do agente.
+- 📦 Os pacotes ADB são carregados **sob demanda** (code-split) — quem não usa USB não baixa.
+
+> Combina com a casca hospedada: WebUSB cobre device físico sem instalar nada; o
+> agente local (abaixo) cobre emuladores e o resto.
+
 ## Casca web hospedada (usar o hardware da própria máquina pelo navegador)
 
 A UI pode ser **hospedada** (ex.: GitHub Pages) e controlar o **hardware da máquina

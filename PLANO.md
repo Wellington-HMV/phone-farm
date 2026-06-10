@@ -276,8 +276,20 @@ instala o SDK e aceita os termos do Google (ver `LICENSE`).
       `--mode web`), client.js roteia base+token (header nos fetch, `?token=` em
       img/stream/record/ws), `AgentGate.jsx` (tela de pareamento). `npm run build:web`
       (base `/phone-farm/`) + `.github/workflows/pages.yml`. Validado: porteiro testado
-      (mesma-origem 200 / cross sem token 401 / com token 200). **Pendência:** WebUSB
-      (caminho A) p/ device físico sem instalar nada — não feito.
+      (mesma-origem 200 / cross sem token 401 / com token 200).
+- [x] **WebUSB — device físico no navegador, zero install** (2026-06-10): caminho A.
+      Chrome/Edge falam ADB direto pelo USB via @yume-chan/adb (Tango). Botão "🔌
+      Device USB" → prompt nativo → espelho (loop screencap PNG, toque/swipe pela
+      dimensão natural da img) + teclas. `src/webusb/webadb.js` (connect: manager.
+      BROWSER → requestDevice → device.connect → AdbDaemonTransport.authenticate
+      {serial,connection,credentialStore=AdbWebCredentialStore} → new Adb; input via
+      subprocess.noneProtocol.spawnWait), `src/components/UsbMirror.jsx`. Pacotes ADB
+      em import dinâmico (code-split: chunks ~80KB só no clique). Builds (local+web)
+      OK. **NÃO validado com device real** (sem Android físico nesta máquina) — testar
+      ponta a ponta. Pendências WebUSB: scrcpy H.264 (fluido, hoje é screencap ~8fps),
+      instalar APK (sync push), texto/multi-toque.
+- [ ] **GitHub Pages ativado** (2026-06-10): casca no ar em
+      https://wellington-hmv.github.io/phone-farm/ (deploy auto via workflow).
 
 ---
 

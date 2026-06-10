@@ -13,6 +13,10 @@
     "start": "vite build && node server/src/index.js"
   },
   "dependencies": {
+    "@yume-chan/adb": "^2.6.0",
+    "@yume-chan/adb-credential-web": "^2.1.0",
+    "@yume-chan/adb-daemon-webusb": "^2.3.2",
+    "@yume-chan/stream-extra": "^2.6.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
