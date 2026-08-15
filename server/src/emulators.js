@@ -118,11 +118,11 @@ export function createEmulatorManager() {
     const args = [
       "-avd", name,
       "-port", String(port),
-      "-no-window",
+      "-qt-hide-window", // janela oculta (não -no-window): permite GPU real, -no-window força software
       "-no-boot-anim",
       "-no-snapshot",
       "-no-audio",
-      "-gpu", "swiftshader_indirect",
+      "-gpu", "auto",
     ];
     const proc = spawn(EMULATOR, args, { detached: false, stdio: "ignore", windowsHide: true });
     const entry = { proc, port, serial, startedAt: Date.now(), name };
@@ -187,6 +187,12 @@ export function createEmulatorManager() {
       serials = stdout.split("\n").map((l) => l.match(/^(emulator-\d+)\b/)?.[1]).filter(Boolean);
     } catch {
       return map;
+    }
+    // uma porta/serial pode ser reciclada por outro AVD após o anterior cair —
+    // descarta cache de quem não está mais em "adb devices" p/ evitar nome preso.
+    const live = new Set(serials);
+    for (const cachedSerial of nameCache.keys()) {
+      if (!live.has(cachedSerial)) nameCache.delete(cachedSerial);
     }
     await Promise.all(
       serials.map(async (serial) => {
