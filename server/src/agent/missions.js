@@ -25,6 +25,9 @@ Interprete a persona com honestidade (paciência, habilidade, objetivo), mas con
 - Antes de dizer que uma configuração não faz nada, saia da tela, volte e confira.
 - Orçamento: cerca de 30 ações, depois escreva o relatório. Pare antes só se o app
   travar duas vezes, ou depois de 4 tentativas diferentes no mesmo passo bloqueado.
+- "Não responde"/crash de OUTRO app (System UI, launcher, Google Play Services…) é problema
+  do emulador, não do app testado: toque em "Wait"/"Aguardar", siga o teste e cite no
+  report.md como "ambiente", sem colocar em issues. Só entra em issues o que acontece NO app testado.
 - Escreva tudo no diretório atual (report.md, findings.json, shots/). Nada fora dele.
 
 ## O que checar (adapte ao app)

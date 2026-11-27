@@ -1,33 +1,58 @@
 <h1 align="center">🌾 Phone Farm</h1>
 
 <p align="center">
-  Fazenda de celulares Android local — emuladores via UI, espelho ao vivo e controle total.
+  <b>Sua fazenda de celulares Android local — com um agente de IA que testa seu app antes de você publicar.</b>
 </p>
 
----
+<p align="center">
+  <a href="https://github.com/Wellington-HMV/phone-farm/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/Wellington-HMV/phone-farm?label=instalador%20Windows"></a>
+  <a href="./LICENSE"><img alt="MIT" src="https://img.shields.io/badge/licen%C3%A7a-MIT-green"></a>
+  <img alt="Android" src="https://img.shields.io/badge/Android-AVD%20%2B%20USB-3DDC84?logo=android&logoColor=white">
+  <img alt="Node" src="https://img.shields.io/badge/Node-18%2B-339933?logo=node.js&logoColor=white">
+  <a href="https://github.com/Wellington-HMV/phone-farm/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/Wellington-HMV/phone-farm?style=social"></a>
+</p>
 
-**Phone Farm** transforma sua máquina numa **fazenda de celulares Android** para QA e
-automação. Cada "celular" é um **emulador Android (AVD)** rodando localmente — criado,
-iniciado e parado direto pela interface — ou um device físico via **USB** (mesmo
-pipeline `adb`). A **grade espelha a tela real** de cada device ao vivo; ao **expandir**,
-você controla por **toque, arraste e long-press**, além de teclas (Home/Back/Power/
-Volume), rotação, digitação, abertura de URL, **instalação de APK** (em lote) e
-**gravação de tela**.
+<p align="center">
+  <img src="docs/img/painel.png" alt="Painel do Phone Farm com um emulador Android espelhado ao vivo" width="900">
+</p>
 
-Stack: **React + Vite + Tailwind** no front; **Node + Express + WebSocket** no back, com
-streaming **MJPEG** leve (downscale via `sharp`). Sem o SDK Android instalado, roda em
-modo **mock** para desenvolvimento da UI.
+**Phone Farm** transforma seu PC numa **fazenda de celulares Android** para QA:
+
+- 📱 **Emuladores pela interface** — cria, sobe e derruba AVDs com um clique; device físico via USB também.
+- 🪞 **Espelho ao vivo** de todas as telas numa grade, com **controle total** (toque, arraste, teclas, texto, URL, rotação).
+- 📦 **APK em lote**, gravação de tela e **roteiros de automação** rodando em vários devices de uma vez.
+- 🤖 **Agente testador com IA** — um Claude usa seu app como **pessoas reais** (idosa com fonte 200%, usuário que
+  digita errado, quem usa tema escuro…) e devolve **problemas com screenshots**, do mais grave ao menos grave.
+- 🔒 **Tudo local** — sem nuvem de devices, sem mensalidade; o agente só toca no device dele.
+
+<p align="center">
+  <img src="docs/img/agente-resultado.png" alt="Resultado do agente testador: problemas por severidade com screenshots" width="560">
+</p>
+
+## Começo rápido
+
+**Windows:** baixe o instalador em [Releases](https://github.com/Wellington-HMV/phone-farm/releases/latest)
+(precisa do [Android Studio](https://developer.android.com/studio) para os emuladores).
+
+**Qualquer SO (código):**
+
+```bash
+git clone https://github.com/Wellington-HMV/phone-farm.git
+cd phone-farm && npm install && (cd server && npm install)
+npm start            # http://localhost:4000 — sem Android SDK, abre em modo demonstração (mock)
+```
+
+Para o agente testador: [Claude Code](https://docs.claude.com/en/docs/claude-code) instalado e logado.
+Detalhes em [🤖 Agente testador](#-agente-testador-ia-testa-seu-app-antes-de-publicar).
 
 > Painel de QA/testes/automação **próprios** — não destinado a fraude, multi-conta ou
 > burla de Termos de Serviço de apps. Arquitetura e decisões em [`PLANO.md`](./PLANO.md).
 
-> 🏁 **v0.1 — primeira versão funcional.** Cada "celular" é um **emulador Android (AVD)**
-> rodando na mesma máquina (device USB também funciona). Sobe/derruba pela UI, a grade
-> **espelha a tela real** ao vivo, e o modal dá **controle total** (toque, teclas, APK,
-> gravação). Sem SDK/adb, cai em **mock**. Próximo: empacotar p/ instalar em outras máquinas.
->
 > **Interação:** grade = espelho (só visual); **duplo-clique** ou ⤢ expande; modal =
-> toque/arraste/long-press + Back/Home/Power/Vol/Girar/URL/texto/APK/gravar. Lista = animação leve.
+> toque/arraste/long-press + Back/Home/Power/Vol/Girar/URL/texto/APK/gravar.
+>
+> Stack: **React + Vite + Tailwind** no front; **Node + Express + WebSocket** no back, com
+> streaming **MJPEG** leve (downscale via `sharp`).
 
 ## Pré-requisitos
 
@@ -292,6 +317,11 @@ login (`claude` no PATH, ou `PF_CLAUDE_BIN`), app já instalado nos devices (�
 - RAM: cada emulador + agente pesa. Em máquina de 32 GB, deixe os AVDs com 2–4 GB e comece
   com 1–2 devices por execução.
 - Use emulador/contas de teste: o agente toca em tudo, e as telas vão para o provedor do modelo.
+
+<img src="docs/img/agente-historico.png" alt="Histórico de execuções do agente testador" width="560">
+
+> **Dica:** emulador com pouca RAM (2 GB) ou GPU por software trava o *System UI* e gera
+> falsos "app não responde". Use 3–4 GB e aceleração de GPU para resultados confiáveis.
 
 Ideia, personas e ferramentas adaptadas do
 [mobile-agent-testers](https://github.com/pierridotite/mobile-agent-testers) (MIT) — aqui
