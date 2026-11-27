@@ -307,7 +307,8 @@ Meta: testar os apps do usuário antes de publicar. Substitui o "Rodar suite" qu
       - agente estourava turnos sem relatório → orçamento no prompt + resgate `--resume`;
       - idioma marcado "aplicado" sem ser (`persist.sys.locale` vazio) → fallback
         `ro.product.locale` + `sameLocale`; restore só volta idioma que trocamos.
-- [ ] Validar o resgate `--resume` ponta a ponta (E2E 2 morreu por falta de RAM).
+- [x] Resgate `--resume` validado (E2E 3, 3 turnos forçados): estourou `max_turns`, sessão
+      retomada escreveu report.md + findings.json em 3 turnos, US$ 0,008 no total.
 - [ ] Gravar o caminho do agente como roteiro da DSL (reexecutar sem gastar modelo).
 - [ ] Agrupar achados parecidos com o modelo (hoje só título normalizado).
 - [ ] iOS fica de fora (precisa de Mac) — usar o workflow original no GitHub p/ isso.
