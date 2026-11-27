@@ -1,7 +1,7 @@
 {
   "name": "phone-farm",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Painel de farm de celulares Android para QA — grade/lista de devices com tela ao vivo e controle remoto",
   "scripts": {

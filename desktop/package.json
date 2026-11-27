@@ -1,6 +1,6 @@
 {
   "name": "phone-farm-desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Phone Farm — app desktop (Electron) que sobe o backend e abre a UI",
   "author": "Wellington (Wellington-HMV)",

@@ -1,7 +1,7 @@
 {
   "name": "phone-farm-server",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Backend do Phone Farm — REST + WebSocket, device source adb/mock",
   "scripts": {
