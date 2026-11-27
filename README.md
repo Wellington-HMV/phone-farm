@@ -264,6 +264,37 @@ wait 800              # ou: sleep 800
 Falha num passo não aborta o roteiro — cada passo reporta ✓/✕. Mesmas ações do
 controle manual (via `adb input`). Servidor de automação completo (Appium) é futuro.
 
+## 🤖 Agente testador (IA testa seu app antes de publicar)
+
+Botão **🤖 Testar app**: em cada device selecionado (ou todos online), um agente
+**Claude Code** interpreta uma **persona** (ex.: Dona Lúcia, 68 anos, fonte grande;
+Seu Jorge, fonte 200%; Bruno, que digita dados errados de propósito), usa o app como
+usuário real e devolve **problemas com screenshots**, do mais grave ao menos grave.
+O resultado vira o pass/fail do card (✕ se achou bloqueador/grave).
+
+Missões: **explorar** como usuário novo · **testar uma funcionalidade** (você descreve) ·
+**reproduzir um bug** (sim/não/incerto por device) · **relatório de melhorias**.
+
+Requisitos: [Claude Code](https://docs.claude.com/en/docs/claude-code) instalado e com
+login (`claude` no PATH, ou `PF_CLAUDE_BIN`), app já instalado nos devices (📦 Instalar APK).
+
+- Custo: usa sua cota do Claude — ~US$ 0,15–0,55 por device com Sonnet; Haiku é mais barato.
+- Cada agente só tem duas ferramentas (`screen` = screenshot + elementos + acessibilidade +
+  crashes do logcat; `act` = toque/gesto/texto **no próprio device**). Sem `adb` livre, sem
+  rede, sem MCP, sem as configurações do seu Claude Code (`--setting-sources project`).
+- Fonte e tema do device mudam durante o teste e voltam no fim. Trocar idioma exige imagem
+  `google_apis` (as com Play Store não deixam `adb root`).
+- Relatórios e screenshots: `~/.phone-farm/agent-runs/<execução>/<device>/`.
+- Se o agente gastar todos os turnos sem escrever o relatório, a mesma sessão é retomada
+  (`--resume`, até 12 turnos) só para escrevê-lo.
+- RAM: cada emulador + agente pesa. Em máquina de 32 GB, deixe os AVDs com 2–4 GB e comece
+  com 1–2 devices por execução.
+- Use emulador/contas de teste: o agente toca em tudo, e as telas vão para o provedor do modelo.
+
+Ideia, personas e ferramentas adaptadas do
+[mobile-agent-testers](https://github.com/pierridotite/mobile-agent-testers) (MIT) — aqui
+rodando local, sem GitHub Actions.
+
 ## Licença
 
 **MIT** — use, modifique e distribua à vontade (ver [`LICENSE`](./LICENSE)).

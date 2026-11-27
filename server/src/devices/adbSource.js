@@ -3,9 +3,10 @@
 
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { adbPath } from "../adbPath.js";
 
 const exec = promisify(execFile);
-const ADB = process.env.ADB_PATH || "adb";
+const ADB = adbPath();
 
 // Mapa de ação -> keyevent adb
 const KEYEVENT = { back: 4, home: 3, recents: 187, power: 26, volup: 24, voldown: 25 };

@@ -12,3 +12,12 @@ project is not affiliated with, sponsored, or endorsed by Google.
 Open-source dependencies (React, Vite, Tailwind CSS, Express, ws, multer, sharp,
 Electron, among others) are each under their own licenses (MIT/Apache-2.0),
 which apply to those components only.
+
+Adapted code / Código adaptado
+------------------------------
+
+The AI tester (server/src/agent/: accessibility check, screen/act tools, personas,
+mission briefs, run status and summary) is adapted from mobile-agent-testers
+(https://github.com/pierridotite/mobile-agent-testers), MIT License,
+Copyright (c) 2026 Pierre Raffalli. Full license text:
+server/src/agent/LICENSE-mobile-agent-testers

@@ -10,6 +10,7 @@ import EmulatorBar from "./components/EmulatorBar.jsx";
 import ProvisionModal from "./components/ProvisionModal.jsx";
 import ScriptModal from "./components/ScriptModal.jsx";
 import SavedScriptsModal from "./components/SavedScriptsModal.jsx";
+import AgentModal from "./components/AgentModal.jsx";
 import AgentGate from "./components/AgentGate.jsx";
 import UsbMirror from "./components/UsbMirror.jsx";
 import { webusbSupported, connectUsbDevice } from "./webusb/webadb.js";
@@ -18,7 +19,7 @@ export default function App() {
   const [paired, setPaired] = useState(!needsPairing());
   const [usbConn, setUsbConn] = useState(null);
   const [usbMsg, setUsbMsg] = useState("");
-  const { devices, source, connected, runSuite, deviceAction } = useDevices();
+  const { devices, source, connected, deviceAction } = useDevices();
 
   const connectUsb = async () => {
     setUsbMsg("Selecione o device no prompt do navegador…");
@@ -33,6 +34,7 @@ export default function App() {
   const [provisionOpen, setProvisionOpen] = useState(false);
   const [scriptOpen, setScriptOpen] = useState(false);
   const [savedOpen, setSavedOpen] = useState(false);
+  const [agentOpen, setAgentOpen] = useState(false);
   const [batchMsg, setBatchMsg] = useState("");
   const batchApk = useRef(null);
 
@@ -91,7 +93,8 @@ export default function App() {
     [devices]
   );
 
-  const handleRunSuite = () => runSuite(selected.size ? [...selected] : undefined);
+  // agente testador nos selecionados (ou todos online)
+  const handleRunSuite = () => setAgentOpen(true);
   const selectAll = () => setSelected(new Set(shown.map((d) => d.id)));
 
   const Chip = ({ v, label }) => (
@@ -201,8 +204,9 @@ export default function App() {
             <button
               onClick={handleRunSuite}
               className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-sm font-medium whitespace-nowrap"
+              title="um agente de IA usa o app em cada device como usuário real e reporta os problemas"
             >
-              ▶ Rodar suite
+              🤖 Testar app
             </button>
           </div>
         </div>
@@ -288,7 +292,7 @@ export default function App() {
           <div className="flex items-center gap-2 bg-slate-800/80 rounded-lg px-2 py-1">
             <span className="text-xs text-sky-300">{selected.size} selec.</span>
             <button onClick={handleRunSuite} className="text-xs px-2 py-1 rounded bg-slate-700 hover:bg-sky-600">
-              ▶ Rodar suite
+              🤖 Testar app
             </button>
             <button
               onClick={() => [...selected].forEach((id) => deviceAction(id, "home"))}
@@ -348,6 +352,13 @@ export default function App() {
         open={scriptOpen}
         targets={selected.size ? [...selected] : devices.filter((d) => d.status === "online").map((d) => d.id)}
         onClose={() => setScriptOpen(false)}
+      />
+      <AgentModal
+        open={agentOpen}
+        targets={(selected.size ? devices.filter((d) => selected.has(d.id)) : devices)
+          .filter((d) => d.status === "online")
+          .map((d) => d.id)}
+        onClose={() => setAgentOpen(false)}
       />
       <SavedScriptsModal
         open={savedOpen}

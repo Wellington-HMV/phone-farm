@@ -17,6 +17,7 @@ import { shrink } from "./frame.js";
 import { SCRIPT_ACTIONS, SCRIPT_EXAMPLE } from "./script.js";
 import { listScripts, saveScript, deleteScript } from "./scriptsStore.js";
 import { loadAgentConfig, makeAuth, makeWsVerify } from "./security.js";
+import { createAgentRunner } from "./agent/runner.js";
 
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.PF_BIND || "127.0.0.1"; // só loopback; PF_BIND=0.0.0.0 p/ expor na LAN
@@ -62,9 +63,32 @@ app.get("/api/health", (_req, res) =>
 
 app.get("/api/devices", (_req, res) => res.json({ source: source.kind, devices: manager.list() }));
 
-app.post("/api/suite", (req, res) => {
-  const ids = Array.isArray(req.body?.ids) ? req.body.ids : manager.list().map((d) => d.id);
-  res.json(manager.runSuite(ids));
+// ---- agente testador (Claude Code por device, persona + relatório) ----
+const agents = createAgentRunner(manager);
+app.get("/api/agent/options", (_req, res) =>
+  res.json({
+    personas: agents.personas(),
+    missions: Object.entries(agents.missions()).map(([id, m]) => ({ id, label: m.label })),
+    mock: source.kind !== "adb",
+  })
+);
+app.get("/api/devices/:id/packages", async (req, res) => res.json({ packages: await agents.packages(req.params.id) }));
+app.get("/api/agent-runs", (_req, res) => res.json({ runs: agents.list() }));
+app.post("/api/agent-runs", (req, res) => {
+  if (source.kind !== "adb") return res.status(400).json({ ok: false, error: "agente precisa de devices reais (adb), não mock" });
+  const r = agents.start(req.body || {});
+  res.status(r.ok ? 200 : 400).json(r);
+});
+app.get("/api/agent-runs/:id", (req, res) => {
+  const r = agents.get(req.params.id);
+  return r ? res.json(r) : res.status(404).json({ ok: false, error: "não encontrado" });
+});
+app.post("/api/agent-runs/:id/cancel", (req, res) => res.json(agents.cancel(req.params.id)));
+// arquivos do agente: ?device=<serial>&name=shots/01.png | report.md | findings.json
+app.get("/api/agent-runs/:id/file", (req, res) => {
+  const p = agents.filePath(req.params.id, req.query.device, String(req.query.name || ""));
+  if (!p) return res.status(404).end();
+  res.sendFile(p);
 });
 
 app.post("/api/devices/:id/action", async (req, res) => {

@@ -48,8 +48,35 @@ export async function fetchDevices() {
   return getJson("/api/devices"); // { source, devices }
 }
 
-export async function runSuite(ids) {
-  return sendJson("/api/suite", { ids });
+// ---- agente testador ----
+export async function agentOptions() {
+  return getJson("/api/agent/options"); // { personas, missions, mock }
+}
+
+export async function devicePackages(id) {
+  return getJson(`/api/devices/${encodeURIComponent(id)}/packages`); // { packages }
+}
+
+export async function listAgentRuns() {
+  return getJson("/api/agent-runs"); // { runs }
+}
+
+export async function startAgentRun(body) {
+  return sendJson("/api/agent-runs", body); // { ok, id } | { ok:false, error }
+}
+
+export async function getAgentRun(id) {
+  return getJson(`/api/agent-runs/${encodeURIComponent(id)}`);
+}
+
+export async function cancelAgentRun(id) {
+  return sendJson(`/api/agent-runs/${encodeURIComponent(id)}/cancel`, undefined);
+}
+
+/** URL de um arquivo do agente: shots/NN.png, report.md, findings.json. */
+export function agentFileUrl(id, device, name) {
+  const p = new URLSearchParams({ device, name });
+  return withToken(apiUrl(`/api/agent-runs/${encodeURIComponent(id)}/file?${p}`));
 }
 
 export async function deviceAction(id, action) {

@@ -5,10 +5,11 @@ import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { sdkRoot } from "./adbPath.js";
 
 const execP = promisify(execFile);
 
-const SDK = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || "";
+const SDK = sdkRoot();
 const isWin = process.platform === "win32";
 const EMULATOR = SDK ? join(SDK, "emulator", isWin ? "emulator.exe" : "emulator") : "emulator";
 const ADB = SDK ? join(SDK, "platform-tools", isWin ? "adb.exe" : "adb") : "adb";

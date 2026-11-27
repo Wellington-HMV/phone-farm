@@ -88,21 +88,10 @@ export class DeviceManager extends EventEmitter {
     }
   }
 
-  /** Simula rodar suite de teste nos ids (running -> pass|fail). */
-  runSuite(ids) {
-    const targets = ids.filter((id) => this.devices.get(id)?.status === "online");
-    targets.forEach((id) => this.tests.set(id, "running"));
+  /** Estado de teste do device ("idle"|"running"|"pass"|"fail") — vem do agente testador. */
+  setTest(id, state) {
+    this.tests.set(id, state);
     this._apply();
-    targets.forEach((id, i) => {
-      const t = setTimeout(() => {
-        // resultado pseudo-aleatório estável por id
-        const fail = (id.split("").reduce((a, c) => a + c.charCodeAt(0), 0) + i) % 4 === 0;
-        this.tests.set(id, fail ? "fail" : "pass");
-        this._apply();
-      }, 900 + (i % 6) * 450);
-      this.timers.push(t);
-    });
-    return { running: targets.length };
   }
 
   async action(id, kind) {

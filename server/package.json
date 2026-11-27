@@ -6,7 +6,8 @@
   "description": "Backend do Phone Farm — REST + WebSocket, device source adb/mock",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "test": "node --test"
   },
   "dependencies": {
     "express": "^4.21.2",

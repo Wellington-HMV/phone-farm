@@ -291,6 +291,27 @@ instala o SDK e aceita os termos do Google (ver `LICENSE`).
 - [ ] **GitHub Pages ativado** (2026-06-10): casca no ar em
       https://wellington-hmv.github.io/phone-farm/ (deploy auto via workflow).
 
+### Agente testador (feito 2026-11-27) — porte local do mobile-agent-testers (MIT)
+Meta: testar os apps do usuário antes de publicar. Substitui o "Rodar suite" que
+**sorteava** pass/fail (`manager.runSuite` removido).
+- [x] `server/src/agent/`: `uixml` (parser do uiautomator), `a11y` (sem nome / <48 dp),
+      `cli/screen` + `cli/act` (ferramentas do agente, presas ao `ANDROID_SERIAL`),
+      `personas` (7, pt-BR), `missions` (explorar/funcionalidade/reproduzir/melhorias),
+      `status` (como o `claude -p` terminou), `summary` (agrupa achados), `runner`.
+- [x] Rotas `/api/agent/options`, `/api/agent-runs` (+ `:id`, `cancel`, `file`),
+      `/api/devices/:id/packages`. UI `AgentModal` (nova execução, ao vivo, histórico).
+- [x] `adbPath.js`: acha o SDK no caminho padrão do SO (antes, SDK fora do PATH = mock).
+- [x] Testes: `cd server && npm test` (node:test, 12 casos).
+- [x] E2E 1 (app Configurações, persona Jorge, Haiku, 40 turnos): 23 telas, US$ 0,03,
+      fonte 200% aplicada e restaurada. Achou 2 bugs nossos, corrigidos:
+      - agente estourava turnos sem relatório → orçamento no prompt + resgate `--resume`;
+      - idioma marcado "aplicado" sem ser (`persist.sys.locale` vazio) → fallback
+        `ro.product.locale` + `sameLocale`; restore só volta idioma que trocamos.
+- [ ] Validar o resgate `--resume` ponta a ponta (E2E 2 morreu por falta de RAM).
+- [ ] Gravar o caminho do agente como roteiro da DSL (reexecutar sem gastar modelo).
+- [ ] Agrupar achados parecidos com o modelo (hoje só título normalizado).
+- [ ] iOS fica de fora (precisa de Mac) — usar o workflow original no GitHub p/ isso.
+
 ---
 
 ## 7. Riscos e cuidados

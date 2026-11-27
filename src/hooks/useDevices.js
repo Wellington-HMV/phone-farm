@@ -50,7 +50,6 @@ export function useDevices() {
     devices,
     source,
     connected,
-    runSuite: (ids) => api.runSuite(ids),
     deviceAction: (id, action) => api.deviceAction(id, action),
     provision: () => api.provision(),
   };
