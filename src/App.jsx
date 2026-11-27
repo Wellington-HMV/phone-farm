@@ -88,6 +88,7 @@ export default function App() {
       total: devices.length,
       online: devices.filter((d) => d.status === "online").length,
       pass: devices.filter((d) => d.test === "pass").length,
+      uncertain: devices.filter((d) => d.test === "uncertain").length,
       fail: devices.filter((d) => d.test === "fail").length,
     }),
     [devices]
@@ -155,6 +156,11 @@ export default function App() {
             <span>
               <b className="text-emerald-300">{counts.pass}</b> pass
             </span>
+            {counts.uncertain > 0 && (
+              <span>
+                <b className="text-amber-300">{counts.uncertain}</b> incerto
+              </span>
+            )}
             <span>
               <b className="text-rose-300">{counts.fail}</b> fail
             </span>
@@ -218,6 +224,7 @@ export default function App() {
           <Chip v="all" label="Todos" />
           <Chip v="online" label="Online" />
           <Chip v="pass" label="✓ Pass" />
+          <Chip v="uncertain" label="? Incerto" />
           <Chip v="fail" label="✕ Fail" />
           <Chip v="virtual" label="Virtual" />
           <Chip v="real" label="Real" />

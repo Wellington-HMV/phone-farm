@@ -37,5 +37,6 @@ export const TEST_BADGE = {
   idle: { t: "—", c: "text-slate-500 bg-slate-800" },
   running: { t: "● run", c: "text-sky-300 bg-sky-500/20" },
   pass: { t: "✓ pass", c: "text-emerald-300 bg-emerald-500/20" },
+  uncertain: { t: "? incerto", c: "text-amber-300 bg-amber-500/20" },
   fail: { t: "✕ fail", c: "text-rose-300 bg-rose-500/20" },
 };

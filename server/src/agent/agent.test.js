@@ -74,6 +74,11 @@ test("veredito pass/fail", () => {
   assert.equal(verdict({ issues: [{ severity: "minor" }] }), "pass");
   assert.equal(verdict({ issues: [{ severity: "Major" }] }), "fail");
   assert.equal(verdict({ issues: [], reproduced: "yes" }), "fail");
+  // viu pouco: sem nada grave, mas estourou turnos → incerto, não pass
+  assert.equal(verdict({ issues: [] }, "max_turns"), "uncertain");
+  assert.equal(verdict({ issues: [{ severity: "minor" }] }, "finished"), "pass");
+  assert.equal(verdict({ issues: [{ severity: "major" }] }, "max_turns"), "fail");
+  assert.equal(verdict({ issues: [], reproduced: "unclear" }), "uncertain");
 });
 
 test("personas ciclam pelos devices", () => {

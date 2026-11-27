@@ -270,7 +270,9 @@ Botão **🤖 Testar app**: em cada device selecionado (ou todos online), um age
 **Claude Code** interpreta uma **persona** (ex.: Dona Lúcia, 68 anos, fonte grande;
 Seu Jorge, fonte 200%; Bruno, que digita dados errados de propósito), usa o app como
 usuário real e devolve **problemas com screenshots**, do mais grave ao menos grave.
-O resultado vira o pass/fail do card (✕ se achou bloqueador/grave).
+O resultado vira o status do card: ✕ se achou bloqueador/grave; **? incerto** se não achou
+nada grave mas o agente esgotou os turnos (viu pouco) ou não conseguiu confirmar o bug; ✓ só
+quando terminou de testar sem nada grave.
 
 Missões: **explorar** como usuário novo · **testar uma funcionalidade** (você descreve) ·
 **reproduzir um bug** (sim/não/incerto por device) · **relatório de melhorias**.

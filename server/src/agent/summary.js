@@ -70,9 +70,13 @@ export function summarize(agents) {
 }
 
 /** Device "falhou" se achou blocker/major, ou se o bug foi reproduzido. */
-export function verdict(findings) {
+// pass só quando o agente terminou por conta própria e nada grave apareceu.
+// Sem nada grave mas com orçamento estourado (viu pouco) ou reprodução incerta → "uncertain".
+export function verdict(findings, status) {
   if (!findings) return "fail";
   if (findings.reproduced === "yes") return "fail";
   const bad = (findings.issues || []).some((i) => ["blocker", "major"].includes(String(i.severity).toLowerCase()));
-  return bad ? "fail" : "pass";
+  if (bad) return "fail";
+  if (status === "max_turns" || findings.reproduced === "unclear") return "uncertain";
+  return "pass";
 }

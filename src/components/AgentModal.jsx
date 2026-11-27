@@ -306,6 +306,11 @@ function RunView({ id }) {
               <td className="text-right tabular-nums text-slate-300">{fmtCost(a.costUsd)}</td>
               <td className="text-right">
                 {a.verdict === "pass" && <span className="text-emerald-300">✓ passou</span>}
+                {a.verdict === "uncertain" && (
+                  <span className="text-amber-300" title="Nada grave achado, mas o agente não terminou de testar (turnos esgotados) ou a reprodução ficou incerta.">
+                    ? incerto
+                  </span>
+                )}
                 {a.verdict === "fail" && <span className="text-rose-300">✕ falhou</span>}
                 {a.state === "done" && (
                   <button

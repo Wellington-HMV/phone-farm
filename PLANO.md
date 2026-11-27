@@ -309,6 +309,8 @@ Meta: testar os apps do usuário antes de publicar. Substitui o "Rodar suite" qu
         `ro.product.locale` + `sameLocale`; restore só volta idioma que trocamos.
 - [x] Resgate `--resume` validado (E2E 3, 3 turnos forçados): estourou `max_turns`, sessão
       retomada escreveu report.md + findings.json em 3 turnos, US$ 0,008 no total.
+- [x] Veredito **incerto** (`uncertain`): sem nada grave mas `max_turns` ou reprodução
+      `unclear` — antes isso saía como pass (E2E 3: 3 turnos, 0 problemas, "passou").
 - [ ] Gravar o caminho do agente como roteiro da DSL (reexecutar sem gastar modelo).
 - [ ] Agrupar achados parecidos com o modelo (hoje só título normalizado).
 - [ ] iOS fica de fora (precisa de Mac) — usar o workflow original no GitHub p/ isso.

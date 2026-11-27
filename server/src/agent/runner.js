@@ -255,7 +255,7 @@ export function createAgentRunner(manager) {
       }
 
       const findings = readJson(path.join(dir, "findings.json"));
-      const v = verdict(findings);
+      const v = verdict(findings, st.status);
       update({
         state: "done",
         note: undefined,

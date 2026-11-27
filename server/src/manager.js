@@ -13,7 +13,7 @@ export class DeviceManager extends EventEmitter {
     this.emulators = emulators; // EmulatorManager opcional
     this.pollMs = pollMs;
     this.devices = new Map(); // id -> device (com .test)
-    this.tests = new Map(); // id -> "idle"|"running"|"pass"|"fail"
+    this.tests = new Map(); // id -> "idle"|"running"|"pass"|"uncertain"|"fail"
     this.timers = [];
   }
 
