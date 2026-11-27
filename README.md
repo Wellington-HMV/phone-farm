@@ -5,6 +5,10 @@
 </p>
 
 <p align="center">
+  <b>Português</b> · <a href="./README.en.md">English</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/Wellington-HMV/phone-farm/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/Wellington-HMV/phone-farm?label=instalador%20Windows"></a>
   <a href="./LICENSE"><img alt="MIT" src="https://img.shields.io/badge/licen%C3%A7a-MIT-green"></a>
   <img alt="Android" src="https://img.shields.io/badge/Android-AVD%20%2B%20USB-3DDC84?logo=android&logoColor=white">
